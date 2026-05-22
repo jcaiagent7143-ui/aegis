@@ -69,7 +69,7 @@ dev = [
 ]
 docs = [
   "mkdocs>=1.6",
-  "mkdocs-material>=9.5",
+  "mkdocs-material>=9.7.6",
   "mkdocstrings[python]>=0.25",
 ]
 
