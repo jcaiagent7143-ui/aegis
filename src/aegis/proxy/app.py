@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import time
 import uuid
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any, Literal
 
@@ -207,7 +208,7 @@ async def _stream_text(
     model: str,
     text: str,
     result: Any,
-):
+) -> AsyncIterator[str]:
     """Emit OpenAI-style SSE chunks for streaming clients."""
     # Initial role chunk
     yield _sse(

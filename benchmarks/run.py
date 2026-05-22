@@ -149,7 +149,9 @@ async def run(
     return output
 
 
-def _summarize(results, modes: list[Mode]) -> dict[str, dict[str, Any]]:
+def _summarize(
+    results: dict[str, dict[str, dict[str, Any]]], modes: list[Mode]
+) -> dict[str, dict[str, Any]]:
     summary: dict[str, dict[str, Any]] = {}
     for mode in modes:
         rows = [results[t][mode] for t in results]

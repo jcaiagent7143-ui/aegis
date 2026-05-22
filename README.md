@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.1-blue)](https://pypi.org/project/self-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.3-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)
@@ -25,10 +25,11 @@
 >
 > The PyPI name `aegis-harness` was already owned by an unrelated project — **`apiad/aegis`**, a multi-agent TUI orchestrator. If you ran `pip install aegis-harness` against our v0.4.0 docs, you got *their* package, not ours, and **none of the API documented here will exist** (no `Aegis` class, no `.run()`, no 5-stage pipeline — that's their `WorkflowEngine` instead).
 >
-> **This project ships as `self-harness`** (PyPI publication in progress). Until then, install directly from this repo:
+> **This project ships as `self-harness` on PyPI.** Install it the normal way:
 >
 > ```bash
-> pip install "self-harness[all] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+> pip install self-harness            # core
+> pip install "self-harness[all]"     # everything (providers, proxy, mcp, web, embeddings)
 > ```
 >
 > No relation to `apiad/aegis`. Different code, different goals, different author.
@@ -107,8 +108,8 @@ If you're using **OpenAI Codex CLI**, **Cursor without skills**, **Aider**, **Op
 {
   "mcpServers": {
     "aegis": {
-      "command": "aegis",
-      "args": ["mcp"],
+      "command": "uvx",
+      "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"],
       "env": {
         "OPENAI_API_KEY": "sk-...",
         "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
@@ -129,7 +130,7 @@ Tools exposed: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 ### Option B — OpenAI-compatible HTTP proxy (Codex CLI, Aider, Open WebUI, generic /v1 clients)
 
 ```bash
-pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+pip install "self-harness[proxy,openai]"
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
 # then in your tool: set base URL to http://localhost:8000/v1
@@ -142,10 +143,7 @@ Copy-paste configs for every tool: [docs/guides/use-with-your-ai-coding-tool.md]
 ## Quickstart (Python / CLI)
 
 ```bash
-# Until PyPI publish:
-pip install "self-harness[all] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
-# After PyPI publish (work in progress):
-#   pip install self-harness[all]
+pip install "self-harness[all]"
 
 export ANTHROPIC_API_KEY=sk-ant-...
 

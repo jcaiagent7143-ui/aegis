@@ -6,6 +6,7 @@ import asyncio
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import typer
 from rich.console import Console
@@ -90,7 +91,7 @@ def replay_cmd(
 @cache_app.command("list")
 def cache_list(cache_dir: Path = typer.Option(Path(".aegis"))) -> None:
     aegis = _aegis(cache_dir)
-    items = aegis.cache.list()
+    items = aegis.cache.list_all()
     if not items:
         console.print("[dim]Cache is empty.[/dim]")
         return
@@ -164,7 +165,7 @@ def mcp_cmd() -> None:
 
         {
           "mcpServers": {
-            "aegis": {"command": "uvx", "args": ["self-harness", "mcp"]}
+            "aegis": {"command": "uvx", "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"]}
           }
         }
     """
@@ -228,7 +229,7 @@ def bench_cmd(
 ) -> None:
     """Run the Aegis benchmark suite."""
     try:
-        from benchmarks.run import run as bench_run  # type: ignore[import-not-found]
+        from benchmarks.run import run as bench_run  # type: ignore[import-not-found,unused-ignore]
     except ImportError:
         # Fallback: shell out to the script
         import subprocess
@@ -257,7 +258,7 @@ def version_cmd() -> None:
 # ── rendering helpers ────────────────────────────────────────────────────
 
 
-def _render_result(result, *, show_harness: bool, show_audit: bool) -> None:
+def _render_result(result: Any, *, show_harness: bool, show_audit: bool) -> None:
     audit = result.audit
 
     status = "[green]✓ SUCCESS[/green]" if audit.succeeded else "[red]✗ FAILED[/red]"

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+from collections.abc import AsyncIterator
 from typing import Any
 
 from aegis.providers.base import Completion, Message, Tool, ToolCall, to_openai_dicts
@@ -149,7 +150,7 @@ class OpenAI:
         temperature: float = 0.2,
         max_tokens: int = 4096,
         json_only: bool = False,
-    ):
+    ) -> AsyncIterator[tuple[str, str | Completion]]:
         """Streaming variant — yields text deltas as the model produces them.
 
         For tool-call streaming we accumulate the deltas and emit the assembled

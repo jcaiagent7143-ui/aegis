@@ -9,7 +9,7 @@ build-backend = "hatchling.build"
 #   pip install self-harness
 #   from aegis import Aegis
 name = "self-harness"
-version = "0.5.2"
+version = "0.5.3"
 description = "Dynamic, on-the-fly generated harnesses for AI agents — the LLM writes the entire runtime (system prompt, loop, tools, schema, verifier) per task."
 readme = "README.md"
 license = { text = "MIT" }
@@ -135,8 +135,24 @@ mypy_path = "src"
 packages = ["aegis"]
 
 [[tool.mypy.overrides]]
-module = ["anthropic.*", "openai.*", "google.*", "ollama.*", "litellm.*", "vcr.*"]
+module = [
+  "anthropic.*", "openai.*", "google.*", "ollama.*", "litellm.*",
+  "vcr.*", "textual.*", "mcp.*", "fastapi.*", "uvicorn.*",
+]
 ignore_missing_imports = true
+
+# MCP server uses @server.list_tools() / @server.call_tool() decorators from
+# the mcp SDK which are not typed — silently disable decorator type-checking
+# here rather than turning off strict globally.
+[[tool.mypy.overrides]]
+module = ["aegis.mcp.server"]
+disallow_untyped_decorators = false
+disallow_untyped_calls = false
+
+# Benchmarks are a CLI/research surface, not the public API — relax strict.
+[[tool.mypy.overrides]]
+module = ["benchmarks.*"]
+disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -165,11 +165,16 @@ class HarnessModule:
         memory_mb: int | None = 512,
     ) -> list[str]:
         """Run ``verify(output)`` under wall-clock + memory limits."""
-        return run_with_limits(
+        result = run_with_limits(
             lambda: self.verify_fn(output),
             timeout_s=timeout_s,
             memory_mb=memory_mb,
         )
+        # The generated verify() contract returns list[str]; we re-assert here
+        # so callers get a clean failure if the harness returns something else.
+        if not isinstance(result, list):
+            raise SandboxError(f"verify() must return list[str], got {type(result).__name__}")
+        return [str(x) for x in result]
 
     def repair_feedback(self, failures: list[str], output: Any) -> str:
         """Compose the user-message fed back to the model on a verify failure.

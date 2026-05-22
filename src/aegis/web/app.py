@@ -10,7 +10,7 @@ from __future__ import annotations
 import contextlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
@@ -18,6 +18,9 @@ from fastapi.staticfiles import StaticFiles
 
 from aegis import Aegis
 from aegis.core.goal import Goal
+
+if TYPE_CHECKING:
+    from aegis.core.result import StageRecord
 
 WEB_DIR = Path(__file__).parent
 
@@ -115,10 +118,14 @@ async def _stream_pipeline(aegis: Aegis, goal: Goal, ws: WebSocket) -> None:
 
         # 4 — execute
         await ws.send_json({"event": "stage_start", "name": "execute"})
-        harness = load_harness(
-            source,
-            tool_callable=lambda name, **kw: aegis.tools.get(name).fn(**kw),
-        )
+
+        def _tool_runtime(name: str, **kw: Any) -> Any:
+            spec = aegis.tools.get(name)
+            if spec is None:
+                raise KeyError(f"tool {name!r} not registered")
+            return spec.fn(**kw)
+
+        harness = load_harness(source, tool_callable=_tool_runtime)
         value, tool_log, ti, to = await execute(goal, harness, aegis.provider, aegis.tools)
         audit.stages.append(_record("execute", {"value": value, "tool_calls": tool_log}, ti, to))
         audit.tool_calls.extend(tool_log)
@@ -161,7 +168,7 @@ async def _stream_pipeline(aegis: Aegis, goal: Goal, ws: WebSocket) -> None:
             audit.save(Path(aegis.cache_dir) / "runs" / f"{audit.run_id}.json")
 
 
-def _record(name: str, output: dict[str, Any], ti: int, to: int, *, ok: bool = True):
+def _record(name: str, output: dict[str, Any], ti: int, to: int, *, ok: bool = True) -> StageRecord:
     from aegis.core.result import StageRecord
 
     s = StageRecord(name=name, tokens_in=ti, tokens_out=to, output=output)

@@ -219,7 +219,7 @@ async def _handle_list_risks(_: dict[str, Any]) -> str:
     )
 
 
-def _build_server():
+def _build_server() -> Any:
     """Construct the MCP Server with the four Aegis tools registered."""
     from mcp.server import Server
     from mcp.types import TextContent, Tool

@@ -46,6 +46,6 @@ def test_list_and_clear(tmp_path):
     cache = HarnessCache(tmp_path / "h")
     cache.put("a", "ha", _profile())
     cache.put("b", "hb", _profile())
-    assert len(cache.list()) == 2
+    assert len(cache.list_all()) == 2
     assert cache.clear() >= 2
-    assert cache.list() == []
+    assert cache.list_all() == []

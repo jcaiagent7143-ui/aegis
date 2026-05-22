@@ -62,7 +62,11 @@ class HarnessCache:
         self._upsert_index(entry)
         return entry
 
-    def list(self) -> list[CachedHarness]:
+    def list_all(self) -> list[CachedHarness]:
+        """All cached harnesses on disk. (Was named ``.list()`` pre-v0.5.3 —
+        renamed because the bare name ``list`` shadowed ``builtins.list``
+        inside the class scope and confused mypy on every other type
+        annotation in this file. Callers updated to ``list_all()``.)"""
         return [self._load(e["hash"]) for e in self._load_index()]
 
     def get(self, h: str) -> CachedHarness | None:

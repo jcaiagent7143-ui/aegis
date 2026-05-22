@@ -2,7 +2,7 @@
 
 The fastest way to add Aegis to your existing AI coding workflow — no Python, no rewrites. Pick the integration that matches your tool.
 
-> ⚠️ **Don't `pip install aegis-harness`** — that's a different project on PyPI (apiad/aegis). Install ours via the git URL below until our PyPI publication lands.
+> ⚠️ **Don't `pip install aegis-harness`** — that's a different project on PyPI (apiad/aegis). Our package is `self-harness`.
 
 | Your tool | Best integration | Setup time |
 |---|---|---|
@@ -26,13 +26,12 @@ Aegis runs as a Model Context Protocol stdio server. Your AI assistant spawns it
 **Install once:**
 
 ```bash
-# TODAY (until self-harness lands on PyPI) — install directly from GitHub:
-pip install "self-harness[mcp,openai,anthropic] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
-aegis mcp --help
+# Zero-install via uvx (recommended for MCP — no venv to manage):
+uvx --from "self-harness[mcp,openai,anthropic]" aegis mcp --help
 
-# AFTER PyPI publication (work in progress):
-#   uvx self-harness mcp                       # zero-install via uvx
-#   pip install 'self-harness[mcp,openai,anthropic]'
+# Or install into your venv:
+pip install "self-harness[mcp,openai,anthropic]"
+aegis mcp --help
 ```
 
 Set your provider key (in your shell, for testing):
@@ -61,8 +60,8 @@ Add to `~/.claude/mcp.json` (create if missing):
 {
   "mcpServers": {
     "aegis": {
-      "command": "aegis",
-      "args": ["mcp"],
+      "command": "uvx",
+      "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
@@ -72,10 +71,10 @@ Add to `~/.claude/mcp.json` (create if missing):
 }
 ```
 
-> **Note**: Use `"command": "aegis"` while we're on the git-install path
-> (the binary `aegis` lands in your venv's `bin/` directory). After PyPI
-> publishes, you can switch to `"command": "uvx", "args": ["self-harness", "mcp"]`
-> for zero-install spawning.
+> **Note**: `uvx` spawns the server in a fresh ephemeral venv with the
+> right extras every time — no `pip install` step needed. If you'd rather
+> install Aegis into your own venv, swap `command`/`args` for
+> `"command": "aegis", "args": ["mcp"]` after `pip install "self-harness[mcp,openai]"`.
 
 Restart Claude Code. It now sees `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks` and can invoke them whenever it's about to do something risky.
 
@@ -84,8 +83,8 @@ Restart Claude Code. It now sees `aegis_run`, `aegis_assess`, `aegis_inspect`, `
 Cursor → Settings → MCP → Add new MCP server:
 
 - **Name:** `aegis`
-- **Command:** `aegis` (or `uvx` + args `["self-harness", "mcp"]` post-PyPI)
-- **Args:** `["mcp"]`
+- **Command:** `uvx`
+- **Args:** `["--from", "self-harness[mcp,openai]", "aegis", "mcp"]`
 - **Env:** `OPENAI_API_KEY=sk-...` ← **must be set here, NOT just in your shell**
 
 ### Cline (VS Code extension)
@@ -96,8 +95,8 @@ Open the Cline panel → ⚙ → MCP Servers → Edit JSON:
 {
   "mcpServers": {
     "aegis": {
-      "command": "aegis",
-      "args": ["mcp"],
+      "command": "uvx",
+      "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
@@ -117,8 +116,8 @@ Add to `~/.continue/config.json` under `experimental.modelContextProtocolServer`
     "modelContextProtocolServers": [
       {
         "transport": "stdio",
-        "command": "aegis",
-        "args": ["mcp"],
+        "command": "uvx",
+        "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"],
         "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
       }
     ]
@@ -133,8 +132,8 @@ Windsurf → Settings → MCP → Add Server → paste:
 ```json
 {
   "aegis": {
-    "command": "aegis",
-    "args": ["mcp"],
+    "command": "uvx",
+    "args": ["--from", "self-harness[mcp,openai]", "aegis", "mcp"],
     "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
   }
 }
@@ -158,7 +157,7 @@ The assistant will call `aegis_run`, which spins up the full 5-stage pipeline. Y
 For any tool that speaks the OpenAI API (`/v1/chat/completions`). The proxy intercepts every chat request, runs it through Aegis, and returns the OpenAI shape back.
 
 ```bash
-pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+pip install "self-harness[proxy,openai]"
 export OPENAI_API_KEY=sk-...
 export AEGIS_MODEL=gpt-5.4-nano-2026-03-17
 
@@ -202,8 +201,8 @@ as an MCP server directly:
 {
   "mcpServers": {
     "aegis": {
-      "command": "aegis",
-      "args": ["mcp"],
+      "command": "uvx",
+      "args": ["--from", "self-harness[mcp,gemini]", "aegis", "mcp"],
       "env": {"GOOGLE_API_KEY": "${GOOGLE_API_KEY}"}
     }
   }

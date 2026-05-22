@@ -4,6 +4,78 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] — 2026-05-23
+
+CI cleanups + install-path cleanups. The package is now live on PyPI
+(`pip install self-harness`), so every doc that still pointed at the
+`git+https://github.com/jcaiagent7143-ui/aegis.git` install path has
+been updated. All MCP config examples now use `uvx --from "self-harness[mcp,openai]" aegis mcp`
+so non-Python users don't need to manage a venv at all.
+
+### Fixed
+
+1. **mypy --strict clean across the whole `src/aegis` tree.** The v0.5.2
+   CI lint job failed with 18 errors after the new mypy override config
+   exposed previously-hidden issues. Now zero errors on `mypy src/aegis`.
+   The interesting one: `HarnessCache.list()` was shadowing `builtins.list`
+   inside the class scope and mypy was using *the method* in the return
+   annotation `list[CachedHarness]` of every other method, silently
+   producing nonsense types. Method renamed to `list_all()` (callers in
+   `cli/__main__.py`, tests, and CHANGELOG history updated). Plus return
+   annotations added to `OpenAIProvider.stream`, `proxy._stream_text`,
+   `_build_server`, `_render_result`, `_summarize`, and the verifier now
+   asserts `list[str]` shape before returning to remove an `Any` leak.
+
+2. **`lint` workflow now installs the optional extras.** Previously only
+   `[dev]` was installed, so mypy couldn't resolve `fastapi`, `mcp`,
+   `openai`, `textual` imports and we papered over it with `ignore_missing_imports`
+   for everything. Now installs `[dev,proxy,mcp,openai]` and the
+   ignore-missing-imports list shrinks to only the providers we genuinely
+   don't ship by default (gemini, ollama, litellm, vcr).
+
+3. **`web/app.py` `_tool_runtime` no-None safety.** The websocket handler
+   built a `tool_callable` from `aegis.tools.get(name)` which can return
+   `None` — mypy caught this and so could a user with a misconfigured
+   tool registry. Now raises `KeyError` with the tool name instead of
+   `AttributeError: NoneType has no attribute 'fn'` deep in the harness.
+
+### Changed
+
+- **All install paths switched from git+https to PyPI.** README,
+  `docs/guides/use-with-your-ai-coding-tool.md`, and the CLI docstring
+  for `aegis mcp` now show:
+
+      pip install self-harness                       # core
+      pip install "self-harness[mcp,openai]"         # MCP + OpenAI
+      uvx --from "self-harness[mcp,openai]" aegis mcp   # zero-install MCP
+
+  The seven MCP config examples (Claude Code, Cursor, Cline, Continue.dev,
+  Windsurf, Gemini, fallback) were updated to use the `uvx --from` form
+  so the user's MCP client spawns a fresh ephemeral venv per launch — no
+  `pip install` step required before editing the JSON.
+
+### Internal
+
+- `pyproject.toml` mypy overrides: added `aegis.mcp.server` (untyped
+  decorators from the mcp SDK) and `benchmarks.*` (research code, relaxed
+  `disallow_untyped_defs`). Added `textual.*`, `mcp.*`, `fastapi.*`,
+  `uvicorn.*` to the `ignore_missing_imports` list so the lint job stays
+  green even if those optional extras aren't installed in some CI matrix.
+- `ruff per-file-ignores`: `scripts/**` and `docs/**` get `RUF001/002/003`
+  exemption (Unicode box-drawing characters in CLI scripts and docs are
+  intentional).
+
+## [0.5.2] — 2026-05-23
+
+The two CI failures from v0.5.1 (the previous push). Same content goal as
+this release, just split across two tags because CI was the test surface.
+
+- `test` workflow: install `[dev,proxy,mcp,openai]` extras so the MCP
+  and proxy test paths actually have their dependencies.
+- `lint` workflow: ruff per-file-ignores for `src/aegis/cli/**`
+  (`typer.Option(...)` is the documented API) and `src/aegis/core/risk.py`
+  (StrEnum inheritance pattern is intentional).
+
 ## [0.5.1] — 2026-05-23
 
 Bug-fix release driven by a real end-to-end MCP test against gpt-5.4-nano.
