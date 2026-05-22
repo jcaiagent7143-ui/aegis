@@ -4,6 +4,57 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] — 2026-05-23
+
+Triggered by an external review that mis-identified `pypi.org/project/aegis-harness/`
+(Alejandro Piad's TUI orchestrator) as our codebase — and was right to. Our
+v0.4.0/v0.4.1 SKILL.md/README directed users to that name, so the confusion
+was structurally our fault. This release closes the loop on two fronts:
+
+### Added
+- **Anti-confusion banner** at the top of README + SKILL.md naming the
+  collision explicitly (`apiad/aegis` is a different project) and pointing
+  at the correct git-based install command.
+- **Git-based install commands everywhere** as the recommended path until
+  `self-harness` is published on PyPI. Each occurrence shows both the
+  current (git+https) and post-publish (`pip install self-harness`) form so
+  the docs survive the publication moment without further edits.
+- **OpenAI Codex CLI** + **Gemini CLI** entries in the integration table
+  and dedicated sections in `docs/guides/use-with-your-ai-coding-tool.md`
+  showing the exact env-var + base-URL setup for each. Codex uses the
+  proxy; Gemini CLI gets both proxy and direct-MCP recipes.
+- **Incremental audit-trail persistence** (`Pipeline(audit_path=...)`).
+  The 5-stage pipeline now writes the audit JSON to disk after every
+  stage via an atomic ``.partial → rename`` write, so a process crash or
+  kill mid-pipeline leaves a recoverable trail showing exactly which
+  stages completed. `Aegis.run()` enables this by default, pointing at
+  `cache_dir/runs/_in_flight.json` during execution and finalizing to
+  `cache_dir/runs/<run_id>.json` on completion. Closes criticism #7 of
+  the external review.
+- New test module `tests/unit/test_incremental_persistence.py` (3 tests):
+  happy path stage-by-stage, mid-pipeline crash recovery, persistence
+  failure must not break the pipeline.
+
+### Changed
+- MCP-config examples for Claude Code etc. use `"command": "aegis"` rather
+  than `"command": "uvx"` while we're on the git-install path — uvx requires
+  PyPI to fetch from. Switch back to uvx once publication is live.
+- README badge bumped to 0.4.2.
+
+### Notes for the external reviewer
+- Items #1–#6 and #8 of the v0.4.0 review described `pypi.org/project/aegis-harness/`
+  (apiad/aegis), not this project. Different author, different repo,
+  different architecture. Worth re-running the review against the actual
+  codebase via the git-install command above.
+- Item #7 (state durability) is fixed in this release.
+- Item #9 (skill/docs/package mismatch) was the root cause of the entire
+  confusion and is closed by the rename + git-install messaging + banner.
+
+### Tests
+- **78 unit tests** (was 75), all passing.
+
+---
+
 ## [0.4.1] — 2026-05-22
 
 Bug-fix release surfaced by an external-developer test of the v0.4.0 GitHub

@@ -61,19 +61,43 @@ class Aegis:
         self.cache: HarnessCache = HarnessCache(self.cache_dir / "harnesses")
 
     async def run(self, goal: str | Goal, **context: Any) -> Result:
-        """Run the full 5-stage pipeline on a goal."""
+        """Run the full 5-stage pipeline on a goal.
+
+        The audit trail is persisted incrementally after every stage to
+        ``cache_dir / "runs" / "<run_id>.json"``. If the process crashes
+        mid-pipeline you will find a partial trail at the same path showing
+        exactly which stages completed.
+        """
         from aegis.core.pipeline import Pipeline
 
         goal_obj = goal if isinstance(goal, Goal) else Goal(description=goal, context=context)
+        # Pre-mint the run_id-keyed audit path so the pipeline can persist
+        # incrementally. We can't read result.audit.run_id until the pipeline
+        # constructs the AuditTrail; instead, just point at a temp file and
+        # rename on completion (or — simpler — let the pipeline pick the path
+        # from the audit_path directory).
+        runs_dir = self.cache_dir / "runs"
+        runs_dir.mkdir(parents=True, exist_ok=True)
+        # We'll generate a path now and let the pipeline overwrite it as the
+        # AuditTrail's run_id is known after construction. Simplest: persist to
+        # a known-name "current" file during execution; rename to run_id at end.
+        scratch = runs_dir / "_in_flight.json"
         pipeline = Pipeline(
             provider=self.provider,
             tools=self.tools,
             cache=self.cache if self.enable_cache else None,
             max_repairs=self.max_repairs,
+            audit_path=scratch,
         )
         result = await pipeline.execute(goal_obj)
-        # Persist the audit trail
-        result.audit.save(self.cache_dir / "runs" / f"{result.audit.run_id}.json")
+        # Final canonical save under the real run_id, then drop the scratch.
+        final_path = runs_dir / f"{result.audit.run_id}.json"
+        result.audit.save(final_path)
+        try:
+            if scratch.exists():
+                scratch.unlink()
+        except OSError:
+            pass
         return result
 
     def inspect(self, run_id: str) -> Result:

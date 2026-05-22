@@ -2,6 +2,8 @@
 
 The fastest way to add Aegis to your existing AI coding workflow — no Python, no rewrites. Pick the integration that matches your tool.
 
+> ⚠️ **Don't `pip install aegis-harness`** — that's a different project on PyPI (apiad/aegis). Install ours via the git URL below until our PyPI publication lands.
+
 | Your tool | Best integration | Setup time |
 |---|---|---|
 | Claude Code | MCP server | 30 seconds |
@@ -9,6 +11,8 @@ The fastest way to add Aegis to your existing AI coding workflow — no Python, 
 | Cline | MCP server | 30 seconds |
 | Continue.dev | MCP server | 30 seconds |
 | Windsurf | MCP server | 30 seconds |
+| **OpenAI Codex CLI** | OpenAI proxy | 1 minute |
+| **Gemini CLI** | OpenAI proxy *or* MCP (if your build supports it) | 1 minute |
 | Aider | OpenAI proxy | 1 minute |
 | Open WebUI | OpenAI proxy | 1 minute |
 | GPT-Pilot / anything OpenAI-compatible | OpenAI proxy | 1 minute |
@@ -19,15 +23,16 @@ The fastest way to add Aegis to your existing AI coding workflow — no Python, 
 
 Aegis runs as a Model Context Protocol stdio server. Your AI assistant spawns it and gains four new tools the LLM can call: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 
-**Install once (zero-install via uvx, or pip):**
+**Install once:**
 
 ```bash
-# Zero install — uvx fetches on demand
-uvx self-harness mcp --help
-
-# Or persistent
-pip install 'self-harness[mcp,openai,anthropic]'
+# TODAY (until self-harness lands on PyPI) — install directly from GitHub:
+pip install "self-harness[mcp,openai,anthropic] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
 aegis mcp --help
+
+# AFTER PyPI publication (work in progress):
+#   uvx self-harness mcp                       # zero-install via uvx
+#   pip install 'self-harness[mcp,openai,anthropic]'
 ```
 
 Set your provider key:
@@ -49,8 +54,8 @@ Add to `~/.claude/mcp.json` (create if missing):
 {
   "mcpServers": {
     "aegis": {
-      "command": "uvx",
-      "args": ["self-harness", "mcp"],
+      "command": "aegis",
+      "args": ["mcp"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
@@ -59,6 +64,11 @@ Add to `~/.claude/mcp.json` (create if missing):
   }
 }
 ```
+
+> **Note**: Use `"command": "aegis"` while we're on the git-install path
+> (the binary `aegis` lands in your venv's `bin/` directory). After PyPI
+> publishes, you can switch to `"command": "uvx", "args": ["self-harness", "mcp"]`
+> for zero-install spawning.
 
 Restart Claude Code. It now sees `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks` and can invoke them whenever it's about to do something risky.
 
@@ -136,7 +146,7 @@ The assistant will call `aegis_run`, which spins up the full 5-stage pipeline. Y
 For any tool that speaks the OpenAI API (`/v1/chat/completions`). The proxy intercepts every chat request, runs it through Aegis, and returns the OpenAI shape back.
 
 ```bash
-pip install 'self-harness[proxy,openai]'
+pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
 export OPENAI_API_KEY=sk-...
 export AEGIS_MODEL=gpt-5.4-nano-2026-03-17
 
@@ -155,6 +165,8 @@ Now in your tool, change one setting:
 | Tool | Setting |
 |---|---|
 | **Cursor** | Settings → Models → "OpenAI" → Base URL: `http://localhost:8000/v1` |
+| **OpenAI Codex CLI** | `export OPENAI_API_BASE=http://localhost:8000/v1` then run `codex` as normal |
+| **Gemini CLI** | `export OPENAI_BASE_URL=http://localhost:8000/v1` (Gemini CLI v0.5+ honors OpenAI-compatible endpoints in compat mode) |
 | **Continue.dev** | `~/.continue/config.json` → `apiBase: "http://localhost:8000/v1"` |
 | **Aider** | `aider --openai-api-base http://localhost:8000/v1 --model aegis` |
 | **Open WebUI** | Settings → Connections → OpenAI API → URL: `http://localhost:8000/v1` |
@@ -165,6 +177,49 @@ Every request your tool sends now goes through Aegis. You can verify with:
 ```bash
 curl http://localhost:8000/health
 ```
+
+### Special case: Gemini CLI
+
+Gemini CLI ships its own MCP support. The cleanest path is the proxy above
+(uses Gemini CLI's OpenAI-compatible mode and routes through Aegis). If your
+Gemini CLI build supports user-defined MCP servers, you can also add Aegis
+as an MCP server directly:
+
+```jsonc
+// ~/.gemini/mcp.json (consult `gemini config --help` for exact path)
+{
+  "mcpServers": {
+    "aegis": {
+      "command": "aegis",
+      "args": ["mcp"],
+      "env": {"GOOGLE_API_KEY": "${GOOGLE_API_KEY}"}
+    }
+  }
+}
+```
+
+In this configuration, when Gemini CLI is about to do something risky, its
+planner can call `aegis_run` to get a verified result back — even though the
+outer LLM is Gemini and the Aegis-internal LLM is also Gemini (or whatever
+provider you set in env). Two LLM calls, both Gemini, totally fine.
+
+### Special case: OpenAI Codex CLI
+
+As of recent versions Codex CLI doesn't expose user-configurable MCP
+servers, but it speaks the OpenAI HTTP API directly. The proxy is the
+right path:
+
+```bash
+# Terminal 1
+aegis proxy --port 8000
+
+# Terminal 2 — point Codex at the proxy
+export OPENAI_API_BASE=http://localhost:8000/v1
+codex "refactor src/auth.py to use async-await"
+```
+
+Every Codex completion now flows through Aegis. Codex still thinks it's
+talking to OpenAI; it gets schema-validated, verified outputs back.
 
 ### Per-request mode override
 

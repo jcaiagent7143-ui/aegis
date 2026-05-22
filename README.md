@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.4.1-blue)](https://pypi.org/project/self-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.4.2-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)
@@ -20,6 +20,18 @@
 [**Docs**](docs/index.md)
 
 </div>
+
+> ### ⚠️ Not to be confused with `aegis-harness` on PyPI
+>
+> The PyPI name `aegis-harness` was already owned by an unrelated project — **`apiad/aegis`**, a multi-agent TUI orchestrator. If you ran `pip install aegis-harness` against our v0.4.0 docs, you got *their* package, not ours, and **none of the API documented here will exist** (no `Aegis` class, no `.run()`, no 5-stage pipeline — that's their `WorkflowEngine` instead).
+>
+> **This project ships as `self-harness`** (PyPI publication in progress). Until then, install directly from this repo:
+>
+> ```bash
+> pip install "self-harness[all] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+> ```
+>
+> No relation to `apiad/aegis`. Different code, different goals, different author.
 
 ---
 
@@ -70,7 +82,10 @@ Restart your tool. It now sees four new tools — `aegis_run`, `aegis_assess`, `
 ### Proxy — for Cursor, Continue, Aider, Open WebUI, anything OpenAI-compatible
 
 ```bash
-pip install 'self-harness[proxy,openai]'
+# Until PyPI publish:
+pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+# After PyPI publish:
+#   pip install 'self-harness[proxy,openai]'
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
 ```
@@ -84,7 +99,11 @@ Copy-paste configs for every supported tool: [docs/guides/use-with-your-ai-codin
 ## Quickstart (Python / CLI)
 
 ```bash
-pip install self-harness[all]
+# Until PyPI publish:
+pip install "self-harness[all] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+# After PyPI publish (work in progress):
+#   pip install self-harness[all]
+
 export ANTHROPIC_API_KEY=sk-ant-...
 
 aegis run "Find the top 5 startups in YC's W26 batch and verify each URL"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from aegis.analyze import analyze
@@ -28,6 +29,7 @@ class Pipeline:
         cache: HarnessCache | None = None,
         *,
         max_repairs: int | None = None,
+        audit_path: Path | None = None,
     ) -> None:
         """Create a pipeline.
 
@@ -38,14 +40,43 @@ class Pipeline:
             (default), each task uses whatever ``MAX_REPAIRS`` its synthesized
             harness declared (or the harness default, 1). Pass an int here
             only to force a global ceiling regardless of harness.
+        audit_path:
+            Optional path the pipeline will incrementally write the audit
+            trail to after every stage. If ``None``, no incremental persistence
+            (the caller can still ``audit.save(...)`` at the end). When set,
+            a crash mid-pipeline leaves a recoverable partial JSON on disk
+            showing exactly which stages completed.
         """
         self.provider = provider
         self.tools = tools
         self.cache = cache
         self.max_repairs_override = max_repairs
+        self.audit_path = audit_path
+
+    def _persist(self, audit: AuditTrail) -> None:
+        """Atomically write the audit JSON if a path was configured.
+
+        Atomic = write to ``<path>.partial`` then rename. A reader who sees
+        ``<path>.partial`` knows a run is in flight; a reader who sees
+        ``<path>`` sees a stage-consistent snapshot.
+        """
+        if self.audit_path is None:
+            return
+        try:
+            from pathlib import Path
+
+            target = Path(self.audit_path)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            tmp = target.with_suffix(target.suffix + ".partial")
+            tmp.write_text(audit.model_dump_json(indent=2))
+            tmp.replace(target)
+        except Exception:
+            # Persistence must never break the pipeline itself.
+            pass
 
     async def execute(self, goal: Goal) -> Result:
         audit = AuditTrail(goal=goal.description, provider=self.provider.name)
+        self._persist(audit)  # write the empty shell so partial state exists
         cached = self.cache.lookup(goal.description) if self.cache else None
 
         if cached:
@@ -54,6 +85,7 @@ class Pipeline:
             stage = StageRecord(name="cache_hit", output={"hash": cached.hash})
             stage.mark_finished(notes=f"reused harness {cached.hash}")
             audit.stages.append(stage)
+            self._persist(audit)
             self.cache.record_hit(cached.hash) if self.cache else None
             return await self._run_with_harness(
                 goal, cached.harness_code, cached.risks, audit, cached=True
@@ -66,6 +98,7 @@ class Pipeline:
         stage.tokens_in, stage.tokens_out = ti, to
         stage.mark_finished()
         audit.stages.append(stage)
+        self._persist(audit)
 
         # 2 — ASSESS
         stage = StageRecord(name="assess")
@@ -75,6 +108,7 @@ class Pipeline:
         stage.mark_finished()
         audit.stages.append(stage)
         audit.risks = risks
+        self._persist(audit)
 
         # 3 — SYNTHESIZE
         stage = StageRecord(name="synthesize")
@@ -85,6 +119,7 @@ class Pipeline:
         stage.mark_finished()
         audit.stages.append(stage)
         audit.harness_code = source
+        self._persist(audit)
 
         if self.cache is not None:
             self.cache.put(goal.description, source, risks)
@@ -138,6 +173,7 @@ class Pipeline:
             )
             stage.mark_finished(ok=True, notes="generated harness failed to load; used template")
             audit.stages.append(stage)
+            self._persist(audit)
             source = fallback_src
 
         # Repair budget: harness's own MAX_REPAIRS unless caller overrode it
@@ -158,12 +194,15 @@ class Pipeline:
                 audit.tool_calls.extend(tool_log)
                 stage.mark_finished()
                 audit.stages.append(stage)
+                self._persist(audit)
             except Exception as e:
                 stage.mark_finished(ok=False, notes=str(e))
                 audit.stages.append(stage)
+                self._persist(audit)
                 if attempt >= max_repairs:
                     audit.succeeded = False
                     audit.finished_at = stage.finished_at
+                    self._persist(audit)
                     return Result(value=None, harness_code=source, audit=audit, cached=cached)
                 audit.repairs += 1
                 continue
@@ -174,15 +213,18 @@ class Pipeline:
             v_stage.output = {"passed": not failures, "failures": failures}
             v_stage.mark_finished(ok=not failures)
             audit.stages.append(v_stage)
+            self._persist(audit)
 
             if not failures:
                 audit.succeeded = True
                 audit.finished_at = v_stage.finished_at
+                self._persist(audit)  # persist the terminal succeeded=True state
                 return Result(value=value, harness_code=source, audit=audit, cached=cached)
 
             if attempt >= max_repairs:
                 audit.succeeded = False
                 audit.finished_at = v_stage.finished_at
+                self._persist(audit)  # persist the terminal succeeded=False state
                 return Result(value=value, harness_code=source, audit=audit, cached=cached)
 
             audit.repairs += 1
@@ -194,4 +236,5 @@ class Pipeline:
             )
 
         audit.succeeded = False
+        self._persist(audit)
         return Result(value=value, harness_code=source, audit=audit, cached=cached)

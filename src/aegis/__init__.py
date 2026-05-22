@@ -16,7 +16,7 @@ from aegis.core.goal import Goal
 from aegis.core.result import AuditTrail, Result, StageRecord
 from aegis.core.risk import Risk, RiskLevel, RiskProfile
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 __all__ = [
     "Aegis",

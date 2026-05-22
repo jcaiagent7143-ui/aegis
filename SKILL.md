@@ -14,6 +14,12 @@ version: 0.4.0
 
 # Aegis — self-harnessing agent runtime
 
+> ⚠️ **NOT the same as `aegis-harness` on PyPI** (that name belongs to
+> `apiad/aegis`, a different project — a multi-agent TUI orchestrator). Our
+> project ships as `self-harness` on PyPI (publication pending) and lives at
+> <https://github.com/jcaiagent7143-ui/aegis>. Use the install commands in
+> this file — don't `pip install aegis-harness`.
+
 ## When to invoke
 
 Reach for Aegis when the task has at least one of these properties:
@@ -33,6 +39,20 @@ Do **not** invoke Aegis for:
 
 Aegis ships three integration paths. Pick the one already available in the environment:
 
+### Install (works today, before PyPI publication)
+
+Until `self-harness` lands on PyPI, install directly from this repo:
+
+```bash
+# Core
+pip install "self-harness @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+
+# Or with everything (Anthropic + OpenAI + Gemini + Ollama + LiteLLM + proxy + MCP)
+pip install "self-harness[all] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
+```
+
+After publication, both reduce to `pip install self-harness` / `pip install 'self-harness[all]'`.
+
 ### 1. MCP server (preferred if the host supports MCP)
 
 The host can run Aegis as an MCP stdio server and call the `aegis_run` tool directly:
@@ -42,8 +62,11 @@ The host can run Aegis as an MCP stdio server and call the `aegis_run` tool dire
 {
   "mcpServers": {
     "aegis": {
-      "command": "uvx",
-      "args": ["self-harness", "mcp"],
+      // After PyPI publish:
+      //   "command": "uvx", "args": ["self-harness", "mcp"]
+      // Until then, use the absolute path to your installed `aegis` binary:
+      "command": "aegis",
+      "args": ["mcp"],
       "env": {"OPENAI_API_KEY": "sk-..."}
     }
   }
@@ -55,7 +78,7 @@ Tools exposed: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 ### 2. OpenAI-compatible HTTP proxy
 
 ```bash
-pip install 'self-harness[proxy,openai]'
+pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
 ```
