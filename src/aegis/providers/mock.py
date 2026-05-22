@@ -3,7 +3,7 @@
 Used for:
   * Tests (so unit tests don't need an API key)
   * The CLI fallback when no real provider is configured (so `pip install
-    aegis-harness && aegis run "..."` works out of the box for exploration)
+    self-harness && aegis run "..."` works out of the box for exploration)
   * Replay & demos
 """
 

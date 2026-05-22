@@ -54,7 +54,7 @@ class OpenAI:
         try:
             from openai import AsyncOpenAI
         except ImportError as e:
-            raise ImportError("OpenAI provider requires `pip install aegis-harness[openai]`") from e
+            raise ImportError("OpenAI provider requires `pip install self-harness[openai]`") from e
         self._client = AsyncOpenAI(api_key=self._api_key or None, base_url=self._base_url)
         return self._client
 

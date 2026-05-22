@@ -140,7 +140,8 @@ def serve_cmd(
 
         from aegis.web.app import build_app
     except ImportError as e:
-        console.print("[red]Install web extras: pip install 'aegis-harness[web]'[/red]")
+        # Escape the brackets in `[web]` so Rich's tag parser doesn't strip them.
+        console.print(r"[red]Install web extras: pip install 'self-harness\[web]'[/red]")
         raise typer.Exit(code=2) from e
 
     web_app = build_app(cache_dir=cache_dir)
@@ -163,14 +164,14 @@ def mcp_cmd() -> None:
 
         {
           "mcpServers": {
-            "aegis": {"command": "uvx", "args": ["aegis-harness", "mcp"]}
+            "aegis": {"command": "uvx", "args": ["self-harness", "mcp"]}
           }
         }
     """
     try:
         from aegis.mcp import run_stdio
     except ImportError as e:
-        console.print("[red]Install MCP extras: pip install 'aegis-harness[mcp]'[/red]")
+        console.print(r"[red]Install MCP extras: pip install 'self-harness\[mcp]'[/red]")
         raise typer.Exit(code=2) from e
     run_stdio()
 
@@ -203,7 +204,7 @@ def proxy_cmd(
 
         from aegis.proxy import build_app
     except ImportError as e:
-        console.print("[red]Install proxy extras: pip install 'aegis-harness[proxy]'[/red]")
+        console.print(r"[red]Install proxy extras: pip install 'self-harness\[proxy]'[/red]")
         raise typer.Exit(code=2) from e
 
     if mode not in ("aegis", "passthrough"):

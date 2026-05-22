@@ -89,7 +89,7 @@ def web_search(query: str, max_results: int = 5) -> list[dict[str, str]]:
             r = c.get(
                 "https://duckduckgo.com/html/",
                 params={"q": query},
-                headers={"User-Agent": "Aegis/0.1 (+https://github.com/aegis-harness)"},
+                headers={"User-Agent": "Aegis/0.4.1 (+https://github.com/jcaiagent7143-ui/aegis)"},
             )
     except httpx.HTTPError:
         return []

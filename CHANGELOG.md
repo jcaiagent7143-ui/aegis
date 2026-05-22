@@ -4,6 +4,47 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] — 2026-05-22
+
+Bug-fix release surfaced by an external-developer test of the v0.4.0 GitHub
+release. Two real issues caught and fixed; functionality unchanged.
+
+### Breaking
+- **PyPI distribution renamed `aegis-harness` → `self-harness`.** The old name
+  was already owned by an unrelated project on PyPI (Alejandro Piad's TUI
+  meta-harness — different project, coincidentally also at v0.4.0).
+  Publishing under `aegis-harness` would have failed with a name conflict;
+  users following the v0.4.0 README would have installed someone else's
+  package. The Python import path is unchanged:
+
+      pip install self-harness                # was: pip install aegis-harness
+      from aegis import Aegis                 # unchanged
+
+  Every doc, install command, MCP config example, and provider error
+  message has been updated.
+
+### Fixed
+- **Rich tag parser was eating `[proxy]` / `[mcp]` / `[web]` in error
+  messages.** Running `aegis proxy` without the proxy extras installed
+  printed `Install proxy extras: pip install 'aegis-harness'` — the
+  `[proxy]` portion was silently stripped because Rich treats brackets
+  as style tags. All three "install the extras" hints now escape the
+  brackets so users see the correct command.
+- User-Agent header in `web_search` and `fetch_url` tools updated from the
+  placeholder `github.com/aegis-harness` to the real repo URL.
+- A LAUNCH.md filesystem path was accidentally rewritten during an earlier
+  global username find-replace; restored.
+
+### Migration notes for v0.4.0 users
+If you installed via `pip install aegis-harness` against v0.4.0 docs:
+
+    pip uninstall aegis-harness
+    pip install self-harness          # or for everything: pip install 'self-harness[all]'
+
+GitHub repo URL is unchanged: <https://github.com/jcaiagent7143-ui/aegis>
+
+---
+
 ## [0.4.0] — 2026-05-22
 
 The "any AI tool can use Aegis" release. Two new distribution surfaces mean
@@ -15,7 +56,7 @@ anything OpenAI-compatible can plug Aegis in without writing Python.
   MCP-compatible AI assistant can spawn it and call its four tools:
   `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 - New module `aegis.mcp` (entry point `aegis.mcp.server.run`).
-- Install: `pip install 'aegis-harness[mcp]'` or `uvx aegis-harness mcp`.
+- Install: `pip install 'self-harness[mcp]'` or `uvx self-harness mcp`.
 
 ### Added — OpenAI-compatible HTTP proxy
 - `aegis proxy --port 8000` — exposes `/v1/chat/completions`, `/v1/models`,
@@ -24,7 +65,7 @@ anything OpenAI-compatible can plug Aegis in without writing Python.
   the audit metadata.
 - Per-request mode override via `X-Aegis-Mode: aegis|passthrough` header.
 - Streaming (SSE) supported.
-- New module `aegis.proxy`. Install: `pip install 'aegis-harness[proxy]'`.
+- New module `aegis.proxy`. Install: `pip install 'self-harness[proxy]'`.
 
 ### Added — guide
 - `docs/guides/use-with-your-ai-coding-tool.md` — copy-paste configs for
@@ -82,7 +123,7 @@ defaults. The executor honors every field — no more hardcoded loop config.
 - `aegis.providers.Gemini` — Google Gemini adapter using the official
   `google-genai` SDK. Maps Aegis's internal Message shape onto Gemini's
   Content/Part/FunctionResponse model. Install with
-  `pip install aegis-harness[gemini]`. Auto-detected via `GOOGLE_API_KEY` /
+  `pip install self-harness[gemini]`. Auto-detected via `GOOGLE_API_KEY` /
   `GEMINI_API_KEY` env vars.
 
 ### Changed

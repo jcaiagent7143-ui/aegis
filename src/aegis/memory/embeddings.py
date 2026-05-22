@@ -2,7 +2,7 @@
 
 We avoid pulling in numpy/scipy for the default install — the cache works fine
 with a character-trigram Jaccard similarity. Users who install
-``aegis-harness[embeddings]`` get a real embedding-based implementation.
+``self-harness[embeddings]`` get a real embedding-based implementation.
 """
 
 from __future__ import annotations

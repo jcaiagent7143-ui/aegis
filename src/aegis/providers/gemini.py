@@ -45,7 +45,7 @@ class Gemini:
         try:
             from google import genai
         except ImportError as e:
-            raise ImportError("Gemini provider requires `pip install aegis-harness[gemini]`") from e
+            raise ImportError("Gemini provider requires `pip install self-harness[gemini]`") from e
         self._client = genai.Client(api_key=self._api_key or None)
         return self._client
 

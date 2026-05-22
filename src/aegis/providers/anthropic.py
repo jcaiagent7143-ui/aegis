@@ -42,7 +42,7 @@ class Anthropic:
             import anthropic
         except ImportError as e:
             raise ImportError(
-                "Anthropic provider requires `pip install aegis-harness[anthropic]`"
+                "Anthropic provider requires `pip install self-harness[anthropic]`"
             ) from e
         self._client = anthropic.AsyncAnthropic(api_key=self._api_key or None)
         return self._client

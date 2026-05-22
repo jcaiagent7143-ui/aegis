@@ -33,7 +33,7 @@ class LiteLLM:
             import litellm
         except ImportError as e:
             raise ImportError(
-                "LiteLLM provider requires `pip install aegis-harness[litellm]`"
+                "LiteLLM provider requires `pip install self-harness[litellm]`"
             ) from e
 
         kwargs: dict[str, Any] = {

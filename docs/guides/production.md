@@ -5,7 +5,7 @@ Aegis is designed to drop into existing services. This page is the operator's ch
 ## TL;DR
 
 ```bash
-pip install 'aegis-harness[anthropic,openai,gemini,proxy]'
+pip install 'self-harness[anthropic,openai,gemini,proxy]'
 export ANTHROPIC_API_KEY=sk-ant-...     # or OPENAI_API_KEY / GOOGLE_API_KEY
 export AEGIS_WORKSPACE=/srv/aegis/work   # constrains file tools
 export AEGIS_CACHE_DIR=/var/lib/aegis    # persistent cache + runs
@@ -39,7 +39,7 @@ services:
       - OPENAI_API_KEY=ignored                  # proxy uses its own key from env
 
   aegis:
-    image: aegis-harness:0.4.0
+    image: self-harness:0.4.0
     command: ["aegis", "proxy", "--host", "0.0.0.0", "--port", "8000"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

@@ -6,7 +6,7 @@ the repo so each step is a copy-paste.
 ## 1 · Push to GitHub (5 minutes)
 
 ```bash
-cd /Users/jcaiagent7143-ui/Desktop/claude/harness
+cd /Users/loongnianchew/Desktop/claude/harness
 
 # If gh CLI isn't authenticated yet
 gh auth login --hostname github.com --git-protocol https --web
@@ -42,7 +42,7 @@ secrets needed). One-time setup:
 1. Create a PyPI account if you don't have one: https://pypi.org/account/register/
 2. Visit https://pypi.org/manage/account/publishing/ → "Add a new pending publisher"
 3. Fill in:
-   * **PyPI Project Name:** `aegis-harness`
+   * **PyPI Project Name:** `self-harness`
    * **Owner:**             `jcaiagent7143-ui`
    * **Repository name:**   `aegis`
    * **Workflow name:**     `release.yml`
@@ -75,7 +75,7 @@ it as compromised:
 ## 5 · Validate the live path against the real LLM (5 minutes)
 
 ```bash
-cd /Users/jcaiagent7143-ui/Desktop/claude/harness
+cd /Users/loongnianchew/Desktop/claude/harness
 source .venv/bin/activate
 chflags -R nohidden .venv     # macOS quirk
 

@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-aegis--harness%200.4.0-blue)](https://pypi.org/project/aegis-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.4.1-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)
@@ -58,7 +58,7 @@ Add this to your tool's MCP config (e.g. `~/.claude/mcp.json` for Claude Code):
   "mcpServers": {
     "aegis": {
       "command": "uvx",
-      "args": ["aegis-harness", "mcp"],
+      "args": ["self-harness", "mcp"],
       "env": {"OPENAI_API_KEY": "sk-..."}
     }
   }
@@ -70,7 +70,7 @@ Restart your tool. It now sees four new tools — `aegis_run`, `aegis_assess`, `
 ### Proxy — for Cursor, Continue, Aider, Open WebUI, anything OpenAI-compatible
 
 ```bash
-pip install 'aegis-harness[proxy,openai]'
+pip install 'self-harness[proxy,openai]'
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
 ```
@@ -84,7 +84,7 @@ Copy-paste configs for every supported tool: [docs/guides/use-with-your-ai-codin
 ## Quickstart (Python / CLI)
 
 ```bash
-pip install aegis-harness[all]
+pip install self-harness[all]
 export ANTHROPIC_API_KEY=sk-ant-...
 
 aegis run "Find the top 5 startups in YC's W26 batch and verify each URL"

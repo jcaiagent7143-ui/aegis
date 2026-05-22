@@ -23,10 +23,10 @@ Aegis runs as a Model Context Protocol stdio server. Your AI assistant spawns it
 
 ```bash
 # Zero install — uvx fetches on demand
-uvx aegis-harness mcp --help
+uvx self-harness mcp --help
 
 # Or persistent
-pip install 'aegis-harness[mcp,openai,anthropic]'
+pip install 'self-harness[mcp,openai,anthropic]'
 aegis mcp --help
 ```
 
@@ -50,7 +50,7 @@ Add to `~/.claude/mcp.json` (create if missing):
   "mcpServers": {
     "aegis": {
       "command": "uvx",
-      "args": ["aegis-harness", "mcp"],
+      "args": ["self-harness", "mcp"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
@@ -68,7 +68,7 @@ Cursor → Settings → MCP → Add new MCP server:
 
 - **Name:** `aegis`
 - **Command:** `uvx`
-- **Args:** `["aegis-harness", "mcp"]`
+- **Args:** `["self-harness", "mcp"]`
 - **Env:** `OPENAI_API_KEY=sk-...`
 
 ### Cline (VS Code extension)
@@ -80,7 +80,7 @@ Open the Cline panel → ⚙ → MCP Servers → Edit JSON:
   "mcpServers": {
     "aegis": {
       "command": "uvx",
-      "args": ["aegis-harness", "mcp"],
+      "args": ["self-harness", "mcp"],
       "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
     }
   }
@@ -98,7 +98,7 @@ Add to `~/.continue/config.json` under `experimental.modelContextProtocolServer`
       {
         "transport": "stdio",
         "command": "uvx",
-        "args": ["aegis-harness", "mcp"]
+        "args": ["self-harness", "mcp"]
       }
     ]
   }
@@ -113,7 +113,7 @@ Windsurf → Settings → MCP → Add Server → paste:
 {
   "aegis": {
     "command": "uvx",
-    "args": ["aegis-harness", "mcp"]
+    "args": ["self-harness", "mcp"]
   }
 }
 ```
@@ -136,7 +136,7 @@ The assistant will call `aegis_run`, which spins up the full 5-stage pipeline. Y
 For any tool that speaks the OpenAI API (`/v1/chat/completions`). The proxy intercepts every chat request, runs it through Aegis, and returns the OpenAI shape back.
 
 ```bash
-pip install 'aegis-harness[proxy,openai]'
+pip install 'self-harness[proxy,openai]'
 export OPENAI_API_KEY=sk-...
 export AEGIS_MODEL=gpt-5.4-nano-2026-03-17
 
@@ -221,7 +221,7 @@ aegis proxy --port 8000
 
 **MCP server starts but the tool can't see it** — restart the AI tool fully. Most MCP clients only read the config at launch.
 
-**`pip install aegis-harness[mcp]` complains about Python version** — Aegis needs Python 3.11+. Use `pyenv install 3.12 && pyenv shell 3.12`.
+**`pip install self-harness[mcp]` complains about Python version** — Aegis needs Python 3.11+. Use `pyenv install 3.12 && pyenv shell 3.12`.
 
 **On macOS, you see `ModuleNotFoundError: aegis` after install** — Python 3.13 + Homebrew on macOS sometimes marks editable-install `.pth` files as "hidden" via filesystem flags, breaking `import aegis`. Fix: `chflags -R nohidden ~/.local/share/uv/venvs/`. Or use `pip install` instead of editable install.
 

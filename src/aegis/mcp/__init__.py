@@ -6,7 +6,7 @@ Exposes the Aegis pipeline as MCP tools that any MCP-compatible AI assistant
 Run with::
 
     aegis mcp                       # stdio transport (the MCP standard)
-    uvx aegis-harness mcp           # zero-install
+    uvx self-harness mcp           # zero-install
 
 Then add to the client's MCP config (e.g. ``~/.claude/mcp.json``)::
 
@@ -14,7 +14,7 @@ Then add to the client's MCP config (e.g. ``~/.claude/mcp.json``)::
       "mcpServers": {
         "aegis": {
           "command": "uvx",
-          "args": ["aegis-harness", "mcp"]
+          "args": ["self-harness", "mcp"]
         }
       }
     }

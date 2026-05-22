@@ -3,8 +3,13 @@ requires = ["hatchling>=1.21"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aegis-harness"
-version = "0.4.0"
+# The distribution name `aegis-harness` was already taken on PyPI by an
+# unrelated project (Alejandro Piad's TUI meta-harness). We publish under
+# `self-harness` — the import path stays `aegis`. So:
+#   pip install self-harness
+#   from aegis import Aegis
+name = "self-harness"
+version = "0.4.1"
 description = "Dynamic, on-the-fly generated harnesses for AI agents — the LLM writes the entire runtime (system prompt, loop, tools, schema, verifier) per task."
 readme = "README.md"
 license = { text = "MIT" }

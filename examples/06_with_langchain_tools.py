@@ -4,7 +4,7 @@ Aegis tools are plain functions decorated with ``@tool(...)``. Wrap any
 LangChain BaseTool into that shape and Aegis will treat it the same as a
 built-in tool.
 
-Install: ``pip install aegis-harness langchain-community``
+Install: ``pip install self-harness langchain-community``
 """
 
 from __future__ import annotations

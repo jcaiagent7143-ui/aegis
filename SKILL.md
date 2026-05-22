@@ -43,7 +43,7 @@ The host can run Aegis as an MCP stdio server and call the `aegis_run` tool dire
   "mcpServers": {
     "aegis": {
       "command": "uvx",
-      "args": ["aegis-harness", "mcp"],
+      "args": ["self-harness", "mcp"],
       "env": {"OPENAI_API_KEY": "sk-..."}
     }
   }
@@ -55,7 +55,7 @@ Tools exposed: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 ### 2. OpenAI-compatible HTTP proxy
 
 ```bash
-pip install 'aegis-harness[proxy,openai]'
+pip install 'self-harness[proxy,openai]'
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
 ```

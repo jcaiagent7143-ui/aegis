@@ -3,16 +3,16 @@
 ## Install
 
 ```bash
-pip install aegis-harness[all]
+pip install self-harness[all]
 ```
 
 The `[all]` extra pulls in every provider (Anthropic, OpenAI, Ollama, LiteLLM), plus the web demo and TUI. If you want a leaner install:
 
 ```bash
-pip install aegis-harness                  # core only (works with Mock provider)
-pip install aegis-harness[anthropic]       # + Anthropic
-pip install aegis-harness[openai]          # + OpenAI
-pip install aegis-harness[web]             # + FastAPI demo
+pip install self-harness                  # core only (works with Mock provider)
+pip install self-harness[anthropic]       # + Anthropic
+pip install self-harness[openai]          # + OpenAI
+pip install self-harness[web]             # + FastAPI demo
 ```
 
 ## Set a provider
