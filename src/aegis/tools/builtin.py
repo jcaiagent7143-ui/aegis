@@ -78,11 +78,41 @@ def fetch_url(url: str, timeout: float = DEFAULT_TIMEOUT) -> dict[str, Any]:
     },
 )
 def web_search(query: str, max_results: int = 5) -> list[dict[str, str]]:
-    """Lightweight DuckDuckGo HTML scrape.
+    """Lightweight DuckDuckGo HTML scrape — included so the package works
+    out-of-the-box with zero extra config. NOT recommended for production.
 
-    Returns a list of {title, url, snippet}. If the network is unavailable,
-    returns an empty list rather than raising — the agent should treat empty as
-    "no results found" and proceed accordingly.
+    DuckDuckGo's HTML endpoint rate-limits aggressively and returns sparse
+    results for time-sensitive or specific queries (e.g. "YC W26 batch
+    startups"). External testing of v0.5.0 confirmed this is the most common
+    reason `aegis_run` returns `succeeded=false` on research-style goals —
+    the strict synthesized harness can't find verifiable sources because
+    web_search returned nothing useful.
+
+    For production, register a stronger search tool and let Aegis use it
+    instead. See ``docs/guides/adding-tools.md``. Tavily, Perplexity, Brave
+    Search, and Exa all expose simple search APIs and ship Python clients.
+    Example pattern:
+
+        from aegis.execute.tool_registry import default_registry, tool
+        from tavily import TavilyClient
+        _tavily = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+
+        @tool(name="web_search",  # SAME name overrides built-in
+              description="High-quality web search via Tavily.",
+              parameters={"type": "object",
+                          "properties": {"query": {"type": "string"}},
+                          "required": ["query"]})
+        def web_search(query: str, max_results: int = 5):
+            return _tavily.search(query, max_results=max_results)["results"]
+
+        registry = default_registry()
+        registry.register(web_search)   # last-registered wins
+        aegis = Aegis(tools=registry)
+
+    Returns a list of {title, url, snippet}. If the network is unavailable
+    or DuckDuckGo rate-limits, returns an empty list rather than raising —
+    the agent should treat empty as "no results found" and proceed
+    accordingly (which usually means refusing the task gracefully).
     """
     try:
         with httpx.Client(timeout=DEFAULT_TIMEOUT, follow_redirects=True) as c:

@@ -35,7 +35,7 @@ aegis mcp --help
 #   pip install 'self-harness[mcp,openai,anthropic]'
 ```
 
-Set your provider key:
+Set your provider key (in your shell, for testing):
 ```bash
 export OPENAI_API_KEY=sk-...
 # or
@@ -43,6 +43,13 @@ export ANTHROPIC_API_KEY=sk-ant-...
 # or
 export GOOGLE_API_KEY=...
 ```
+
+> 🚨 **CRITICAL: when you configure `aegis mcp` in your AI tool's MCP config
+> below, you MUST also include the API key in the config's `env` block.**
+> MCP subprocesses DO NOT inherit your shell's environment variables. If
+> `env` is empty or missing the key, Aegis falls back to its Mock provider
+> and returns placeholder text (`"[mock] ..."`) — a silent failure mode
+> verified in external testing. This trips up every first-time integrator.
 
 Then configure your tool:
 
@@ -77,9 +84,9 @@ Restart Claude Code. It now sees `aegis_run`, `aegis_assess`, `aegis_inspect`, `
 Cursor → Settings → MCP → Add new MCP server:
 
 - **Name:** `aegis`
-- **Command:** `uvx`
-- **Args:** `["self-harness", "mcp"]`
-- **Env:** `OPENAI_API_KEY=sk-...`
+- **Command:** `aegis` (or `uvx` + args `["self-harness", "mcp"]` post-PyPI)
+- **Args:** `["mcp"]`
+- **Env:** `OPENAI_API_KEY=sk-...` ← **must be set here, NOT just in your shell**
 
 ### Cline (VS Code extension)
 
@@ -89,9 +96,12 @@ Open the Cline panel → ⚙ → MCP Servers → Edit JSON:
 {
   "mcpServers": {
     "aegis": {
-      "command": "uvx",
-      "args": ["self-harness", "mcp"],
-      "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
+      "command": "aegis",
+      "args": ["mcp"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
+      }
     }
   }
 }
@@ -107,8 +117,9 @@ Add to `~/.continue/config.json` under `experimental.modelContextProtocolServer`
     "modelContextProtocolServers": [
       {
         "transport": "stdio",
-        "command": "uvx",
-        "args": ["self-harness", "mcp"]
+        "command": "aegis",
+        "args": ["mcp"],
+        "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
       }
     ]
   }
@@ -122,8 +133,9 @@ Windsurf → Settings → MCP → Add Server → paste:
 ```json
 {
   "aegis": {
-    "command": "uvx",
-    "args": ["self-harness", "mcp"]
+    "command": "aegis",
+    "args": ["mcp"],
+    "env": {"OPENAI_API_KEY": "${OPENAI_API_KEY}"}
   }
 }
 ```
@@ -275,6 +287,10 @@ aegis proxy --port 8000
 **`uvx: command not found`** — install `uv` first: `curl -LsSf https://astral.sh/uv/install.sh | sh`.
 
 **MCP server starts but the tool can't see it** — restart the AI tool fully. Most MCP clients only read the config at launch.
+
+**Aegis returns `"value": "[mock] ..."` even though I set my API key** — this is the #1 MCP gotcha. MCP subprocesses don't inherit your shell environment. Your `OPENAI_API_KEY` (or any provider key) MUST be set inside the `"env": {}` block of your tool's MCP config — not just in your `.zshrc` / `.bashrc`. If `env` is missing or doesn't include the key, Aegis silently uses its Mock provider and produces placeholder text. Verify with: `aegis_list_risks` will work either way; `aegis_run` returning a value starting with `[mock]` is the smoking gun.
+
+**`aegis_run` returns `succeeded: false` with `tool_calls: []`** — the synthesized harness was too strict for the model to satisfy with the tools available. This is correct behavior — Aegis refused to ship an unverified answer rather than hallucinate. Check `failure_diagnostics` in the response for hints. For research-style tasks where the built-in `web_search` (DuckDuckGo scrape) returns poor results, register a stronger search tool — Tavily, Perplexity, Brave, etc. See `docs/guides/adding-tools.md`.
 
 **`pip install self-harness[mcp]` complains about Python version** — Aegis needs Python 3.11+. Use `pyenv install 3.12 && pyenv shell 3.12`.
 

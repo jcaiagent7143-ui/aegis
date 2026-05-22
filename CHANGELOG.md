@@ -4,6 +4,69 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] — 2026-05-23
+
+Bug-fix release driven by a real end-to-end MCP test against gpt-5.4-nano.
+Four real issues surfaced — three doc fixes and one structural API change to
+make MCP failures actionable.
+
+### Fixed (4 real bugs)
+
+1. **MCP env-var propagation gotcha — now loud everywhere.** MCP subprocesses
+   do NOT inherit the parent shell's environment variables. If a developer
+   configured `aegis mcp` in their AI tool with an empty `"env": {}` block
+   while having `OPENAI_API_KEY` only in `~/.zshrc`, Aegis silently fell
+   through to the Mock provider and returned `"[mock] ..."` placeholder
+   output. Every MCP config example in the docs (README + use-with-AI-tool
+   guide) now has a 🚨 callout explaining this is required and what happens
+   if you miss it. Added an explicit troubleshooting entry: "Aegis returns
+   `[mock] …` even though I set my API key".
+
+2. **`web_search` built-in tool limitations now documented at the source.**
+   DuckDuckGo's HTML endpoint rate-limits aggressively and returns sparse
+   results for time-sensitive queries — the most common cause of
+   `succeeded=false` on research-style goals in the external test against
+   "Find top 5 startups in YC W26". The `web_search` docstring now spells
+   out the limitation and links to working Tavily / Brave Search override
+   examples in `docs/guides/adding-tools.md`. The guide now has full
+   copy-paste snippets for Tavily, Brave, Perplexity, Exa.
+
+3. **`aegis_run` MCP response now includes `failure_diagnostics` when
+   `succeeded=false`.** Previously, a refusal returned
+   `{succeeded: false, value: null, tool_calls: []}` with no signal as to
+   why. Now we surface the last verify failures, the last execute-stage
+   notes, and a `summary` field. Importantly, when the run "succeeded" but
+   the provider was Mock and the value starts with `[mock]`, we add a
+   `likely_cause` hint pointing at the env-not-propagated bug — so the
+   caller can diagnose without reading the audit JSON.
+
+4. **End-to-end MCP integration test committed.** New module
+   `tests/integration/test_mcp_e2e.py` spawns the real `aegis mcp`
+   subprocess and drives it via the official MCP client SDK — the same way
+   Claude Code / Cursor / Cline do. Covers: initialize, list_tools,
+   aegis_list_risks, aegis_assess, aegis_run + aegis_inspect round-trip,
+   Mock-fallback detection, unknown-tool error path, missing-arg error
+   path. Skipped automatically if the `aegis` CLI isn't on PATH or the
+   `mcp` Python package isn't installed.
+
+### Notes from the external test
+- `provider: "openai"` real run on gpt-5.4-nano-2026-03-17 took 112s and
+  used 5,713 tokens for the YC W26 goal. The LLM-synthesized harness was
+  high-quality (7 risks identified with rich rationale, custom
+  `SYSTEM_PROMPT`, Pydantic `HttpUrl` validation, custom `repair_feedback`).
+- The pipeline correctly refused (`succeeded: false`) because DuckDuckGo
+  returned no usable results — exactly the behavior Aegis is supposed to
+  produce vs. a raw LLM call that would have hallucinated 5 plausible
+  fake startup names.
+
+### Tests
+- 78/78 unit tests still passing.
+- New `tests/integration/test_mcp_e2e.py` — 7 tests, all passing locally
+  against the Mock provider; auto-skips in environments without the CLI
+  or MCP SDK.
+
+---
+
 ## [0.5.0] — 2026-05-23
 
 The "your own LLM does the work" release. Aegis becomes primarily a **skill**

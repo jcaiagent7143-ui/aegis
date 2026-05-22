@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.0-blue)](https://pypi.org/project/self-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.1-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)
@@ -109,11 +109,20 @@ If you're using **OpenAI Codex CLI**, **Cursor without skills**, **Aider**, **Op
     "aegis": {
       "command": "aegis",
       "args": ["mcp"],
-      "env": {"OPENAI_API_KEY": "sk-..."}
+      "env": {
+        "OPENAI_API_KEY": "sk-...",
+        "AEGIS_MODEL": "gpt-5.4-nano-2026-03-17"
+      }
     }
   }
 }
 ```
+
+> 🚨 **The `env` block is REQUIRED.** MCP subprocesses do NOT inherit your
+> shell's environment variables. If you put your API key in `~/.zshrc` or
+> `~/.bashrc` and leave `env` empty, Aegis will silently fall back to the
+> Mock provider and return placeholder text — exactly the bug we found in
+> external testing. **Always set provider keys inside the `env` block.**
 
 Tools exposed: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 

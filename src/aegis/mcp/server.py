@@ -86,25 +86,75 @@ async def _handle_run(arguments: dict[str, Any]) -> str:
         goal=arguments["goal"],
         **(arguments.get("context") or {}),
     )
-    return json.dumps(
-        {
-            "succeeded": result.audit.succeeded,
-            "run_id": result.audit.run_id,
-            "value": result.value,
-            "harness_code": result.harness_code,
-            "risks_identified": [
-                {"id": r.id, "level": r.level.value, "rationale": r.rationale}
-                for r in result.audit.risks.risks
-            ],
-            "repairs": result.audit.repairs,
-            "tokens": result.audit.total_tokens,
-            "tool_calls": [{"name": t["name"], "ok": t["ok"]} for t in result.audit.tool_calls],
-            "provider": result.audit.provider,
-            "cached": result.cached,
-        },
-        indent=2,
-        default=str,
-    )
+    response: dict[str, Any] = {
+        "succeeded": result.audit.succeeded,
+        "run_id": result.audit.run_id,
+        "value": result.value,
+        "harness_code": result.harness_code,
+        "risks_identified": [
+            {"id": r.id, "level": r.level.value, "rationale": r.rationale}
+            for r in result.audit.risks.risks
+        ],
+        "repairs": result.audit.repairs,
+        "tokens": result.audit.total_tokens,
+        "tool_calls": [{"name": t["name"], "ok": t["ok"]} for t in result.audit.tool_calls],
+        "provider": result.audit.provider,
+        "cached": result.cached,
+    }
+    # When the pipeline refuses, give the caller enough to act on. Without
+    # this, MCP clients see `succeeded: false` with no signal as to whether
+    # this was a verify-fail, an executor crash, or just no tool calls were
+    # made — surfaced by the external-dev test of v0.5.0.
+    if not result.audit.succeeded:
+        response["failure_diagnostics"] = _diagnose(result)
+        # Hint when the Mock provider fell through silently — the #1
+        # MCP-integration footgun (env not propagated to subprocess).
+        if (
+            result.audit.provider == "mock"
+            and isinstance(result.value, dict)
+            and str(result.value.get("value", "")).startswith("[mock]")
+        ):
+            response["failure_diagnostics"]["likely_cause"] = (
+                "Aegis fell back to the Mock provider — no API key was visible "
+                "to the MCP subprocess. Set OPENAI_API_KEY (or another provider "
+                "key) in the `env` block of your MCP config, not just in your "
+                "shell. MCP subprocesses do NOT inherit parent-shell env vars."
+            )
+    return json.dumps(response, indent=2, default=str)
+
+
+def _diagnose(result: Any) -> dict[str, Any]:
+    """Extract human-readable failure info from a failed Result.
+
+    Pulled from the audit trail's last verify/execute stages — what the
+    pipeline saw the model produce, and what the verifier rejected.
+    """
+    out: dict[str, Any] = {"summary": "", "verify_failures": [], "last_stage_notes": ""}
+    last_verify_failures: list[str] = []
+    last_stage_notes = ""
+    for stage in reversed(result.audit.stages):
+        if stage.name.startswith("verify") and not last_verify_failures:
+            last_verify_failures = list(stage.output.get("failures", []) or [])
+        if not last_stage_notes and stage.notes:
+            last_stage_notes = stage.notes
+    out["verify_failures"] = last_verify_failures
+    out["last_stage_notes"] = last_stage_notes
+    if last_verify_failures:
+        out["summary"] = (
+            f"Verifier rejected the answer after {result.audit.repairs} repair(s). "
+            f"Top failure: {last_verify_failures[0]}"
+        )
+    elif last_stage_notes:
+        out["summary"] = f"Pipeline did not produce a valid output: {last_stage_notes[:200]}"
+    elif not result.audit.tool_calls:
+        out["summary"] = (
+            "The model made zero tool calls — likely couldn't satisfy the "
+            "synthesized harness with the tools available. Consider a stronger "
+            "search tool (see docs/guides/adding-tools.md) or a less strict goal."
+        )
+    else:
+        out["summary"] = "Pipeline refused without a specific verifier failure."
+    return out
 
 
 async def _handle_assess(arguments: dict[str, Any]) -> str:

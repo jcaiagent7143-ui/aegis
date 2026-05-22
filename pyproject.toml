@@ -9,7 +9,7 @@ build-backend = "hatchling.build"
 #   pip install self-harness
 #   from aegis import Aegis
 name = "self-harness"
-version = "0.5.0"
+version = "0.5.1"
 description = "Dynamic, on-the-fly generated harnesses for AI agents — the LLM writes the entire runtime (system prompt, loop, tools, schema, verifier) per task."
 readme = "README.md"
 license = { text = "MIT" }
