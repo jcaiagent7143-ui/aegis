@@ -4,6 +4,70 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] — 2026-05-23
+
+Two real bugs caught by a fresh-venv end-to-end test of v0.5.3 from PyPI.
+Both led to silently-broken runs that returned `value: null` or `[mock] ...`
+text without the caller knowing why. Both fixed and covered by regression
+tests.
+
+### Fixed (2 real bugs)
+
+1. **Cache poisoning across providers and across success boundaries.**
+   The v0.5.2/0.5.3 pipeline wrote every synthesized harness to the cache
+   *before* the run actually executed (`pipeline.py:124-125`) and looked
+   it up *regardless* of which provider was active. So:
+
+   - A run that hit the Mock provider (e.g. `OPENAI_API_KEY` set but
+     `[openai]` extra missing → silent Mock fallback) stored its fallback
+     template harness in the cache.
+   - A subsequent run with a real provider for the *same goal text*
+     short-circuited to the cached fallback harness — never calling the
+     real LLM, returning `value: null`, `tokens: 0`, `duration: 1ms`.
+
+   The fix is two-part:
+   - **Defer cache writes** until after `_run_with_harness` returns with
+     `result.audit.succeeded == True`.
+   - **Skip cache reads and writes** when the active provider is the
+     auto-fallback Mock (tagged `_is_auto_fallback=True` by
+     `auto_provider()`). Explicit `provider=Mock(...)` used in unit tests
+     is still allowed to cache normally.
+
+   Regression test: `tests/unit/test_pipeline_e2e_mock.py::test_failed_run_does_not_poison_cache`
+   and `::test_auto_fallback_mock_skips_cache`.
+
+2. **`auto_provider()` silently chose OpenAI without the `openai`
+   package installed.** Because `from aegis.providers.openai import
+   OpenAI` imports the *adapter class* (not the openai SDK), the
+   `try/except ImportError` in `auto_provider()` never tripped, even
+   when `pip install self-harness` was used without the `[openai]`
+   extra. The user would set `OPENAI_API_KEY`, run `aegis run …`, and
+   then crash 4 stages deep with `ModuleNotFoundError: No module named
+   'openai'` traced through analyze → provider.complete → _get_client.
+
+   Fix: `OpenAI.__init__` now eagerly tries `import openai` and raises a
+   clear `ImportError("OpenAI provider requires the `openai` package.
+   Install with: pip install \"self-harness[openai]\"")` at
+   construction time. `auto_provider()` catches it and either picks the
+   next provider or, on the Mock-fallback path, prints a loud stderr
+   warning naming the missing extra. Same treatment applied to
+   Anthropic, Gemini, and Ollama paths.
+
+### Changed
+
+- `OpenAI(model=...)` now defaults to `os.environ.get("AEGIS_MODEL")`
+  before the hardcoded `"gpt-4o-mini"`. So `AEGIS_MODEL=gpt-5.4-nano…`
+  in the user's env / MCP config now actually selects that model
+  without needing to pass it explicitly. Anthropic and Gemini already
+  honored AEGIS_MODEL — OpenAI was the inconsistent one.
+
+### Internal
+
+- Pipeline gained `_provider_is_mock()` helper that distinguishes the
+  auto-fallback Mock (tagged by `auto_provider`) from an explicit
+  `Mock()` passed by a test. Only the former disables caching.
+- Test count: 87 passing (was 85).
+
 ## [0.5.3] — 2026-05-23
 
 CI cleanups + install-path cleanups. The package is now live on PyPI

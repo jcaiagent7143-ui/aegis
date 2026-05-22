@@ -77,7 +77,13 @@ class Pipeline:
     async def execute(self, goal: Goal) -> Result:
         audit = AuditTrail(goal=goal.description, provider=self.provider.name)
         self._persist(audit)  # write the empty shell so partial state exists
-        cached = self.cache.lookup(goal.description) if self.cache else None
+        # Cache lookups are only safe when the *current* provider is real.
+        # If we're on Mock (no API key), don't trust cache hits either —
+        # the user is probably probing, not running for keeps.
+        cache_safe = self.cache is not None and not self._provider_is_mock()
+        cached = (
+            self.cache.lookup(goal.description) if cache_safe and self.cache is not None else None
+        )
 
         if cached:
             audit.harness_code = cached.harness_code
@@ -86,7 +92,8 @@ class Pipeline:
             stage.mark_finished(notes=f"reused harness {cached.hash}")
             audit.stages.append(stage)
             self._persist(audit)
-            self.cache.record_hit(cached.hash) if self.cache else None
+            if self.cache is not None:
+                self.cache.record_hit(cached.hash)
             return await self._run_with_harness(
                 goal, cached.harness_code, cached.risks, audit, cached=True
             )
@@ -121,10 +128,26 @@ class Pipeline:
         audit.harness_code = source
         self._persist(audit)
 
-        if self.cache is not None:
+        # Run the synthesized harness FIRST, then only cache it if the run
+        # actually succeeded with a real provider. Caching before execution
+        # poisoned the cache with broken or Mock-fallback harnesses that
+        # later sessions would silently replay (the bug in v0.5.3 e2e test).
+        result = await self._run_with_harness(goal, source, risks, audit, cached=False)
+        if self.cache is not None and result.audit.succeeded and not self._provider_is_mock():
             self.cache.put(goal.description, source, risks)
+        return result
 
-        return await self._run_with_harness(goal, source, risks, audit, cached=False)
+    def _provider_is_mock(self) -> bool:
+        """True only if the Mock provider was selected as an auto-fallback.
+
+        Explicit `provider=Mock(...)` instances used in unit tests are NOT
+        flagged — they're a legitimate testing surface and the cache should
+        work normally for them. Only the auto-fallback case (user set
+        OPENAI_API_KEY but didn't install `[openai]`) is suspect, because
+        the returned `[mock] ...` text would otherwise poison the cache
+        for the next real-provider session.
+        """
+        return bool(getattr(self.provider, "_is_auto_fallback", False))
 
     async def replay(
         self,

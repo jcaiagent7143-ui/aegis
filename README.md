@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.3-blue)](https://pypi.org/project/self-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.4-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)

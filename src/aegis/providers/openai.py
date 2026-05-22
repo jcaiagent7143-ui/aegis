@@ -36,14 +36,29 @@ class OpenAI:
 
     def __init__(
         self,
-        model: str = "gpt-4o-mini",
+        model: str | None = None,
         api_key: str | None = None,
         base_url: str | None = None,
         *,
         max_retries: int = 3,
         client: Any | None = None,
     ) -> None:
-        self.model = model
+        # Eagerly verify the openai package is importable so a missing-extra
+        # install produces a clear ImportError at construction time rather
+        # than 4 stages deep inside the pipeline. (Bug found in v0.5.3 e2e
+        # test: auto_provider() returned OpenAI() successfully because the
+        # openai import is lazy, then the analyze stage crashed with a deep
+        # traceback users couldn't easily map back to a missing extra.)
+        if client is None:
+            try:
+                import openai  # noqa: F401
+            except ImportError as e:
+                raise ImportError(
+                    "OpenAI provider requires the `openai` package. "
+                    'Install with: pip install "self-harness[openai]"'
+                ) from e
+        # Honor AEGIS_MODEL override for everyone (cli, mcp, proxy, lib).
+        self.model = model or os.environ.get("AEGIS_MODEL") or "gpt-4o-mini"
         self._api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self._base_url = base_url
         self._max_retries = max_retries
