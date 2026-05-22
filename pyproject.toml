@@ -36,22 +36,22 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-anthropic = ["anthropic>=0.40"]
-openai = ["openai>=1.40"]
-gemini = ["google-genai>=0.3"]
-ollama = ["ollama>=0.3"]
-litellm = ["litellm>=1.40"]
+anthropic = ["anthropic>=0.104.0"]
+openai = ["openai>=2.38.0"]
+gemini = ["google-genai>=2.6.0"]
+ollama = ["ollama>=0.6.2"]
+litellm = ["litellm>=1.85.1"]
 web = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
 proxy = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
 mcp = ["mcp>=1.0"]
 tui = ["textual>=0.60"]
 embeddings = ["numpy>=1.26"]
 all = [
-  "anthropic>=0.40",
-  "openai>=1.40",
-  "google-genai>=0.3",
-  "ollama>=0.3",
-  "litellm>=1.40",
+  "anthropic>=0.104.0",
+  "openai>=2.38.0",
+  "google-genai>=2.6.0",
+  "ollama>=0.6.2",
+  "litellm>=1.85.1",
   "fastapi>=0.110",
   "uvicorn[standard]>=0.29",
   "mcp>=1.0",
