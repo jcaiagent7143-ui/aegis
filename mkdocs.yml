@@ -1,0 +1,65 @@
+site_name: Aegis
+site_description: Dynamic, on-the-fly generated harnesses for AI agents
+site_url: https://loongnianchew.github.io/aegis
+repo_url: https://github.com/loongnianchew/aegis
+repo_name: loongnianchew/aegis
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: cyan
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.snippets
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Concepts:
+      - What is a dynamic harness?: concepts/what-is-a-dynamic-harness.md
+      - The 5-stage pipeline: concepts/the-5-stage-pipeline.md
+      - Why this matters for AGI: concepts/why-this-matters-for-agi.md
+  - Guides:
+      - Quickstart: guides/quickstart.md
+      - Use with your AI coding tool: guides/use-with-your-ai-coding-tool.md
+      - Production deployment: guides/production.md
+      - Custom validators: guides/custom-validators.md
+      - Self-hosting with Ollama: guides/self-hosting-with-ollama.md
+      - Adding tools: guides/adding-tools.md
+  - Cookbook:
+      - Overview: cookbook/index.md
+  - Reference: reference/index.md

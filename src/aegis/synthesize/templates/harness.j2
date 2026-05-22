@@ -1,0 +1,74 @@
+# AUTO-GENERATED HARNESS (fallback template, v0.3)
+# Goal: {{ goal }}
+# Defenses:
+{%- for r in risks %}
+#   {{ r.id }} [{{ r.level }}] -> {{ r.rationale }}
+{%- endfor %}
+
+from typing import Any, Literal
+from pydantic import BaseModel, Field
+{% if has_url_risk %}import re{% endif %}
+
+
+SYSTEM_PROMPT = (
+    "You are an AI agent operating inside an Aegis fallback harness for the "
+    "goal: {{ goal | replace('"', '\\"') }}. "
+    "Use the allowed tools to gather evidence, then emit a single JSON object "
+    "matching the schema. If you cannot verify your answer, say so in the "
+    "rationale rather than guessing. Reply with raw JSON only."
+)
+
+MAX_STEPS: int = {{ max_steps }}
+MAX_REPAIRS: int = {{ max_repairs }}
+MAX_TOKENS_PER_TURN: int = 2048
+TEMPERATURE: float = 0.0
+
+
+class Output(BaseModel):
+    """The verified answer."""
+    value: Any = Field(description="The answer to the user's goal.")
+    rationale: str = Field(
+        default="",
+        max_length=1500,
+        description="One-paragraph justification, in the agent's own words.",
+    )
+    {%- if needs_criterion %}
+    ranking_criterion: str = Field(
+        default="",
+        description="The metric used to rank/select (required for 'top X' questions).",
+    )
+    {%- endif %}
+    {%- if needs_confidence %}
+    confidence: Literal["low", "medium", "high"] = "medium"
+    caveats: list[str] = Field(default_factory=list)
+    {%- endif %}
+
+
+ALLOWED_TOOLS: list[str] = {{ allowed_tools | tojson }}
+
+
+def verify(output: Output) -> list[str]:
+    """Post-hoc verifier — empty list = PASS."""
+    failures: list[str] = []
+    {%- if has_url_risk %}
+    # citation-hallucination defense — every URL in `value` must be well-formed.
+    if isinstance(output.value, list):
+        for item in output.value:
+            url = (item.get("url") if isinstance(item, dict) else None)
+            if url and not re.match(r"https?://[^\s]+$", str(url)):
+                failures.append(f"Malformed URL: {url}")
+    {%- endif %}
+    {%- if has_arithmetic_risk %}
+    # arithmetic-drift defense — numeric value must be finite.
+    if isinstance(output.value, (int, float)) and output.value != output.value:
+        failures.append("Numeric value is NaN")
+    {%- endif %}
+    return failures
+
+
+def repair_feedback(failures: list[str], output) -> str:
+    return (
+        "The previous answer failed verification: " + "; ".join(failures) +
+        ". Re-check every fact you cited against the tool outputs, then "
+        "produce a corrected JSON answer."
+    )

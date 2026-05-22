@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# Tooling
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Aegis runtime state
+.aegis/
+*.aegis-run.json
+
+# Docs
+site/
+
+# Secrets
+.env
+.env.local
+*.pem

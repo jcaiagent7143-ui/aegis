@@ -1,0 +1,31 @@
+name: Bug report
+description: Something broke that you don't think should have.
+labels: ["bug"]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: A clear, concise description.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Goal text
+      placeholder: The goal you passed to Aegis
+  - type: input
+    attributes:
+      label: Provider
+      placeholder: anthropic / openai / ollama / litellm / mock
+  - type: textarea
+    attributes:
+      label: Audit JSON
+      description: Drop the contents of `.aegis/runs/<run_id>.json` here (please redact secrets).
+      render: json
+  - type: textarea
+    attributes:
+      label: Environment
+      description: aegis version, Python version, OS
+      placeholder: |
+        aegis 0.1.0
+        Python 3.12.0
+        macOS 14

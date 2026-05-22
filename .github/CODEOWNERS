@@ -1,0 +1,10 @@
+# Default — every PR pings the maintainer
+*                                @loongnianchew
+
+# Security-critical paths require explicit review
+/src/aegis/synthesize/sandbox.py @loongnianchew
+/src/aegis/assess/risk_catalog.py @loongnianchew
+/src/aegis/providers/             @loongnianchew
+/.github/workflows/               @loongnianchew
+/pyproject.toml                   @loongnianchew
+/SECURITY.md                      @loongnianchew

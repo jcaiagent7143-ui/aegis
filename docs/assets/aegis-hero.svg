@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" font-family="ui-monospace, Menlo, Monaco, monospace">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c0d11"/>
+      <stop offset="100%" stop-color="#14161c"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#66d9ef"/>
+      <stop offset="100%" stop-color="#c792ea"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="560" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="600" y="44" text-anchor="middle" fill="url(#accent)" font-size="22" font-weight="700" filter="url(#glow)">
+    Aegis — the LLM writes its own runtime, per task
+  </text>
+  <text x="600" y="70" text-anchor="middle" fill="#8089a0" font-size="13">
+    Goal in → 5-stage self-harnessing pipeline → verified result + auditable Python harness
+  </text>
+
+  <!-- LEFT: input -->
+  <g transform="translate(40, 110)">
+    <rect width="200" height="80" rx="10" fill="#1a1d25" stroke="#232732"/>
+    <text x="100" y="28" text-anchor="middle" fill="#8089a0" font-size="11">YOUR GOAL</text>
+    <text x="100" y="54" text-anchor="middle" fill="#e6e8ee" font-size="14">"Should I buy NVDA?"</text>
+    <text x="100" y="72" text-anchor="middle" fill="#8089a0" font-size="11">(natural language, no schema)</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <line x1="240" y1="150" x2="290" y2="150" stroke="#66d9ef" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- PIPELINE: 5 stages -->
+  <g transform="translate(290, 100)">
+    <!-- Stage 1 -->
+    <g transform="translate(0, 10)">
+      <rect width="160" height="80" rx="10" fill="#14161c" stroke="#66d9ef"/>
+      <text x="80" y="22" text-anchor="middle" fill="#66d9ef" font-size="11" font-weight="700">1 · ANALYZE</text>
+      <text x="80" y="46" text-anchor="middle" fill="#e6e8ee" font-size="12">decompose</text>
+      <text x="80" y="64" text-anchor="middle" fill="#8089a0" font-size="11">infer output shape</text>
+    </g>
+    <line x1="160" y1="50" x2="180" y2="50" stroke="#66d9ef" stroke-width="2"/>
+
+    <!-- Stage 2 -->
+    <g transform="translate(180, 10)">
+      <rect width="160" height="80" rx="10" fill="#14161c" stroke="#c792ea"/>
+      <text x="80" y="22" text-anchor="middle" fill="#c792ea" font-size="11" font-weight="700">2 · ASSESS (FMEA)</text>
+      <text x="80" y="46" text-anchor="middle" fill="#e6e8ee" font-size="12">identify risks</text>
+      <text x="80" y="64" text-anchor="middle" fill="#8089a0" font-size="11">30-entry catalog</text>
+    </g>
+    <line x1="340" y1="50" x2="360" y2="50" stroke="#c792ea" stroke-width="2"/>
+
+    <!-- Stage 3 (highlighted — the heart) -->
+    <g transform="translate(360, 10)">
+      <rect width="180" height="80" rx="10" fill="#1a1d25" stroke="#e5c07b" stroke-width="3" filter="url(#glow)"/>
+      <text x="90" y="22" text-anchor="middle" fill="#e5c07b" font-size="11" font-weight="700">3 · SYNTHESIZE ★</text>
+      <text x="90" y="46" text-anchor="middle" fill="#e6e8ee" font-size="12">LLM writes Python</text>
+      <text x="90" y="64" text-anchor="middle" fill="#8089a0" font-size="11">prompt + schema + verifier</text>
+    </g>
+    <line x1="540" y1="50" x2="560" y2="50" stroke="#e5c07b" stroke-width="2"/>
+
+    <!-- Stage 4 -->
+    <g transform="translate(560, 10)">
+      <rect width="160" height="80" rx="10" fill="#14161c" stroke="#98c379"/>
+      <text x="80" y="22" text-anchor="middle" fill="#98c379" font-size="11" font-weight="700">4 · EXECUTE</text>
+      <text x="80" y="46" text-anchor="middle" fill="#e6e8ee" font-size="12">sandboxed loop</text>
+      <text x="80" y="64" text-anchor="middle" fill="#8089a0" font-size="11">tool calls + audit</text>
+    </g>
+    <line x1="720" y1="50" x2="740" y2="50" stroke="#98c379" stroke-width="2"/>
+
+    <!-- Stage 5 -->
+    <g transform="translate(740, 10)">
+      <rect width="160" height="80" rx="10" fill="#14161c" stroke="#e06c75"/>
+      <text x="80" y="22" text-anchor="middle" fill="#e06c75" font-size="11" font-weight="700">5 · VERIFY</text>
+      <text x="80" y="46" text-anchor="middle" fill="#e6e8ee" font-size="12">run verifier</text>
+      <text x="80" y="64" text-anchor="middle" fill="#8089a0" font-size="11">fail → repair loop</text>
+    </g>
+  </g>
+
+  <!-- Synthesize output panel — sample Python -->
+  <g transform="translate(40, 230)">
+    <rect width="560" height="300" rx="10" fill="#0c0d11" stroke="#e5c07b" stroke-width="1.5"/>
+    <text x="14" y="22" fill="#e5c07b" font-size="11" font-weight="700">↓ what stage 3 emits — real Python, per task</text>
+
+    <text x="14" y="48"  fill="#7d8294" font-size="11"># AUTO-GENERATED HARNESS for: "Should I buy NVDA?"</text>
+    <text x="14" y="64"  fill="#7d8294" font-size="11"># Defenses: stale-knowledge, arithmetic-drift, overconfident-uncertainty</text>
+
+    <text x="14" y="92"  fill="#c792ea" font-size="11">SYSTEM_PROMPT</text>
+    <text x="120" y="92" fill="#e6e8ee" font-size="11">= "Precision-obsessed analyst. Never</text>
+    <text x="14" y="108" fill="#e6e8ee" font-size="11">                  cite numbers not from a live tool call..."</text>
+
+    <text x="14" y="132" fill="#c792ea" font-size="11">MAX_STEPS</text>
+    <text x="120" y="132" fill="#98c379" font-size="11">= 10</text>
+    <text x="14" y="148" fill="#c792ea" font-size="11">MAX_REPAIRS</text>
+    <text x="120" y="148" fill="#98c379" font-size="11">= 2</text>
+
+    <text x="14" y="176" fill="#c792ea" font-size="11">class</text>
+    <text x="66" y="176" fill="#66d9ef" font-size="11">Output</text>
+    <text x="120" y="176" fill="#e6e8ee" font-size="11">(BaseModel):</text>
+    <text x="14" y="192" fill="#e6e8ee" font-size="11">    decision: Literal["BUY", "HOLD", "SELL"]</text>
+    <text x="14" y="208" fill="#e6e8ee" font-size="11">    confidence: Literal["low", "medium", "high"]</text>
+    <text x="14" y="224" fill="#e6e8ee" font-size="11">    price_used: float = Field(ge=0)</text>
+    <text x="14" y="240" fill="#e6e8ee" font-size="11">    caveats: list[str] = Field(min_length=1)</text>
+
+    <text x="14" y="268" fill="#c792ea" font-size="11">def</text>
+    <text x="50" y="268" fill="#66d9ef" font-size="11">verify</text>
+    <text x="98" y="268" fill="#e6e8ee" font-size="11">(output): re-fetch quote, recompute, reject if drift &gt; 2%</text>
+  </g>
+
+  <!-- RIGHT: outcome -->
+  <g transform="translate(640, 230)">
+    <rect width="520" height="300" rx="10" fill="#0c0d11" stroke="#98c379" stroke-width="1.5"/>
+    <text x="14" y="22" fill="#98c379" font-size="11" font-weight="700">↓ what stages 4-5 produce</text>
+
+    <text x="14" y="48" fill="#e6e8ee" font-size="12">{</text>
+    <text x="34" y="68" fill="#e5c07b" font-size="12">"decision":</text>
+    <text x="120" y="68" fill="#98c379" font-size="12">"HOLD",</text>
+    <text x="34" y="88" fill="#e5c07b" font-size="12">"confidence":</text>
+    <text x="140" y="88" fill="#98c379" font-size="12">"medium",</text>
+    <text x="34" y="108" fill="#e5c07b" font-size="12">"price_used":</text>
+    <text x="140" y="108" fill="#98c379" font-size="12">142.80,</text>
+    <text x="34" y="128" fill="#e5c07b" font-size="12">"caveats":</text>
+    <text x="120" y="128" fill="#e6e8ee" font-size="12">["live quote &gt; 6h old"]</text>
+    <text x="14" y="148" fill="#e6e8ee" font-size="12">}</text>
+
+    <line x1="14" y1="170" x2="506" y2="170" stroke="#232732"/>
+    <text x="14" y="190" fill="#8089a0" font-size="11">audit trail:</text>
+    <text x="14" y="210" fill="#98c379" font-size="11">  ✓ analyze · ✓ assess · ✓ synthesize · ✓ execute · ✓ verify</text>
+    <text x="14" y="230" fill="#8089a0" font-size="11">  tool calls: validate_ticker, get_quote, get_news</text>
+    <text x="14" y="250" fill="#8089a0" font-size="11">  risks defended: 4 · repairs: 0 · tokens: 9,048</text>
+    <text x="14" y="278" fill="#66d9ef" font-size="12" font-weight="700">  $ aegis inspect run_a1b2c3 → full audit JSON</text>
+  </g>
+
+  <!-- arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#66d9ef"/>
+    </marker>
+  </defs>
+</svg>

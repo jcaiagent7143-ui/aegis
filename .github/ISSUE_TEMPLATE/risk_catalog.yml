@@ -1,0 +1,29 @@
+name: Risk catalog entry
+description: Suggest a new failure mode for the Aegis risk catalog.
+labels: ["good first issue", "risk-catalog"]
+body:
+  - type: input
+    attributes:
+      label: Proposed id (kebab-case)
+      placeholder: e.g. sql-injection-pattern
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: One-line description
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Concrete observation
+      description: A real run where you saw this failure mode happen. Paste an agent output if you have one.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Trigger keywords
+      placeholder: comma-separated keywords that should make Aegis suspect this risk
+  - type: textarea
+    attributes:
+      label: Proposed defense hints
+      description: Concrete defenses the synthesizer should consider when this risk applies.

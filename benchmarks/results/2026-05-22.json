@@ -1,0 +1,83 @@
+{
+  "tasks": {
+    "arith_01_sum_range": {
+      "aegis": {
+        "value": {
+          "value": "[mock answer to: Compute the sum of all positive integers from 1 to 100 inclusive. Return only th]",
+          "rationale": "stub"
+        },
+        "passed": false,
+        "tokens": 231,
+        "latency_ms": 3.500125021673739,
+        "tool_calls": 0,
+        "repairs": 0
+      }
+    },
+    "arith_02_word_count": {
+      "aegis": {
+        "value": {
+          "value": "[mock answer to: How many words are in this sentence: \"the quick brown fox jumps over the lazy do]",
+          "rationale": "stub"
+        },
+        "passed": false,
+        "tokens": 236,
+        "latency_ms": 1.1740420013666153,
+        "tool_calls": 0,
+        "repairs": 0
+      }
+    },
+    "arith_03_percent": {
+      "aegis": {
+        "value": {
+          "value": "[mock answer to: What is 17.5% of 240? Return only the numeric answer, no units, no comma.]",
+          "rationale": "stub"
+        },
+        "passed": false,
+        "tokens": 217,
+        "latency_ms": 2.4367079604417086,
+        "tool_calls": 0,
+        "repairs": 0
+      }
+    },
+    "struct_01_top_n": {
+      "aegis": {
+        "value": {
+          "value": "[mock answer to: List exactly 5 noble gases. Return the answer as JSON: {\"gases\": [...]}.]",
+          "rationale": "stub"
+        },
+        "passed": false,
+        "tokens": 216,
+        "latency_ms": 0.8146249456331134,
+        "tool_calls": 0,
+        "repairs": 0
+      }
+    },
+    "struct_02_iso_date": {
+      "aegis": {
+        "value": {
+          "value": "[mock answer to: What is the date 100 days after 2024-01-01? Return the answer as ISO 8601 (YYYY-]",
+          "rationale": "stub"
+        },
+        "passed": false,
+        "tokens": 228,
+        "latency_ms": 1.0505840182304382,
+        "tool_calls": 0,
+        "repairs": 0
+      }
+    }
+  },
+  "summary": {
+    "aegis": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "avg_tokens": 225.6,
+      "avg_latency_ms": 1.7952167894691229,
+      "avg_tool_calls": 0.0,
+      "avg_repairs": 0.0
+    }
+  },
+  "modes": [
+    "aegis"
+  ]
+}
