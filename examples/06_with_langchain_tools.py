@@ -22,7 +22,11 @@ def wrap_langchain_tool(lc_tool: Any) -> Any:
     @tool(
         name=lc_tool.name,
         description=lc_tool.description,
-        parameters={"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]},
+        parameters={
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+            "required": ["query"],
+        },
     )
     def adapted(query: str) -> Any:
         return lc_tool.invoke(query)

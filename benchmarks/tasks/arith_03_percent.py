@@ -6,10 +6,7 @@ RISK_ID = "arithmetic-drift"
 
 
 def check(output) -> bool:
-    if isinstance(output, dict):
-        v = output.get("value", output.get("answer"))
-    else:
-        v = output
+    v = output.get("value", output.get("answer")) if isinstance(output, dict) else output
     try:
         return abs(float(v) - EXPECTED) < 0.01
     except (TypeError, ValueError):

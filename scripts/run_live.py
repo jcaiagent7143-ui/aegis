@@ -26,7 +26,6 @@ import json
 import os
 import sys
 import time
-from typing import Any
 
 from aegis import Aegis
 from aegis.providers import OpenAI

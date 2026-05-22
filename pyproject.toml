@@ -9,7 +9,7 @@ build-backend = "hatchling.build"
 #   pip install self-harness
 #   from aegis import Aegis
 name = "self-harness"
-version = "0.5.1"
+version = "0.5.2"
 description = "Dynamic, on-the-fly generated harnesses for AI agents — the LLM writes the entire runtime (system prompt, loop, tools, schema, verifier) per task."
 readme = "README.md"
 license = { text = "MIT" }
@@ -121,6 +121,9 @@ ignore = ["E501"]    # line length handled by formatter
 # StrEnum is Python 3.11+; we already require it, but the inheritance pattern
 # is explicit and clearer for non-3.11 readers.
 "src/aegis/core/risk.py" = ["UP042"]
+# Scripts use Unicode for terminal output (boxes, multiplication signs)
+"scripts/**" = ["RUF001", "RUF002", "RUF003"]
+"docs/**" = ["RUF001", "RUF002", "RUF003"]
 
 [tool.mypy]
 python_version = "3.11"

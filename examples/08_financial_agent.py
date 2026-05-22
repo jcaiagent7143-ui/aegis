@@ -73,18 +73,30 @@ _MARKET: dict[str, dict[str, Any]] = {
 
 _NEWS: dict[str, list[dict[str, str]]] = {
     "NVDA": [
-        {"date": "2026-05-19", "headline": "NVIDIA Q1 beats: data-center revenue up 71% YoY",
-         "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-Q"},
-        {"date": "2026-05-15", "headline": "AMD MI400 launch could erode NVIDIA's accelerator margin",
-         "url": "https://example.com/news/amd-mi400"},
+        {
+            "date": "2026-05-19",
+            "headline": "NVIDIA Q1 beats: data-center revenue up 71% YoY",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-Q",
+        },
+        {
+            "date": "2026-05-15",
+            "headline": "AMD MI400 launch could erode NVIDIA's accelerator margin",
+            "url": "https://example.com/news/amd-mi400",
+        },
     ],
     "AAPL": [
-        {"date": "2026-05-02", "headline": "Apple Q2 FY26: iPhone revenue flat, services hit record",
-         "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-Q"},
+        {
+            "date": "2026-05-02",
+            "headline": "Apple Q2 FY26: iPhone revenue flat, services hit record",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-Q",
+        },
     ],
     "MSFT": [
-        {"date": "2026-04-25", "headline": "Microsoft Azure growth re-accelerates to 31%",
-         "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-Q"},
+        {
+            "date": "2026-04-25",
+            "headline": "Microsoft Azure growth re-accelerates to 31%",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-Q",
+        },
     ],
 }
 
