@@ -74,10 +74,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/loongnianchew/aegis"
-Documentation = "https://loongnianchew.github.io/aegis"
-Repository = "https://github.com/loongnianchew/aegis"
-Issues = "https://github.com/loongnianchew/aegis/issues"
+Homepage = "https://github.com/jcaiagent7143-ui/aegis"
+Documentation = "https://jcaiagent7143-ui.github.io/aegis"
+Repository = "https://github.com/jcaiagent7143-ui/aegis"
+Issues = "https://github.com/jcaiagent7143-ui/aegis/issues"
 
 [project.scripts]
 aegis = "aegis.cli.__main__:app"

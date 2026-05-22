@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
         - name: aegis
-          image: ghcr.io/loongnianchew/aegis:0.4.0
+          image: ghcr.io/jcaiagent7143-ui/aegis:0.4.0
           args: ["proxy", "--host", "0.0.0.0", "--port", "8000"]
           env:
             - { name: ANTHROPIC_API_KEY, valueFrom: { secretKeyRef: { name: llm-keys, key: anthropic } } }
@@ -150,7 +150,7 @@ Aegis(provider=OpenAI(max_retries=5))
 
 The in-process sandbox stops the obvious foot-guns (file I/O outside the workspace, shell access, network requests from generated code). It is **not** a hardened security boundary suitable for multi-tenant exposure. For untrusted goals, wrap Aegis in an additional isolation layer (Docker, firejail, gVisor, Firecracker, …).
 
-See [SECURITY.md](https://github.com/loongnianchew/aegis/blob/main/SECURITY.md) for the full threat model and disclosure process.
+See [SECURITY.md](https://github.com/jcaiagent7143-ui/aegis/blob/main/SECURITY.md) for the full threat model and disclosure process.
 
 ### Failure modes & circuit-breaking
 

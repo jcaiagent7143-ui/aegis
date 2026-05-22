@@ -5,7 +5,7 @@ Thanks for considering it. Aegis is meant to be **the** canonical OSS reference 
 ## Setting up
 
 ```bash
-git clone https://github.com/loongnianchew/aegis
+git clone https://github.com/jcaiagent7143-ui/aegis
 cd aegis
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[all,dev,docs]"

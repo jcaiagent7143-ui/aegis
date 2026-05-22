@@ -33,7 +33,7 @@ Every Aegis run goes through five stages. Each stage produces a structured artif
 
 The model is asked to produce a tiny JSON object describing the task. This becomes the prior for every later stage.
 
-[Source: `src/aegis/analyze/decomposer.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/analyze/decomposer.py)
+[Source: `src/aegis/analyze/decomposer.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/analyze/decomposer.py)
 
 ## 2. Assess (FMEA)
 
@@ -42,7 +42,7 @@ The model is asked to produce a tiny JSON object describing the task. This becom
 
 FMEA stands for *Failure Mode and Effects Analysis*, borrowed from aerospace and medical-device engineering. We ask the model to enumerate which catalog entries apply to this goal. We then merge in keyword-triggered risks so common patterns are never missed.
 
-[Source: `src/aegis/assess/fmea.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/assess/fmea.py) · [Catalog: `src/aegis/assess/risk_catalog.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/assess/risk_catalog.py)
+[Source: `src/aegis/assess/fmea.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/assess/fmea.py) · [Catalog: `src/aegis/assess/risk_catalog.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/assess/risk_catalog.py)
 
 ## 3. Synthesize
 
@@ -57,7 +57,7 @@ This is the heart of Aegis. The model emits Python code that defines:
 
 The source is then AST-validated and exec'd in a restricted sandbox. On parse/sandbox failure, the synthesizer gets one repair attempt; on second failure, Aegis falls back to a deterministic Jinja template.
 
-[Source: `src/aegis/synthesize/generator.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/synthesize/generator.py) · [Sandbox: `src/aegis/synthesize/sandbox.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/synthesize/sandbox.py)
+[Source: `src/aegis/synthesize/generator.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/synthesize/generator.py) · [Sandbox: `src/aegis/synthesize/sandbox.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/synthesize/sandbox.py)
 
 ## 4. Execute
 
@@ -66,7 +66,7 @@ The source is then AST-validated and exec'd in a restricted sandbox. On parse/sa
 
 A standard agent loop. The system prompt embeds the goal, the allowed-tool list, and the `Output` JSON-schema. The agent calls tools (only those in `ALLOWED_TOOLS`), eventually returns a JSON answer, and we coerce it into the `Output` Pydantic model.
 
-[Source: `src/aegis/execute/runner.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/execute/runner.py)
+[Source: `src/aegis/execute/runner.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/execute/runner.py)
 
 ## 5. Verify
 
@@ -75,7 +75,7 @@ A standard agent loop. The system prompt embeds the goal, the allowed-tool list,
 
 The synthesized verifier runs locally — it can call the same tools the agent used, but in a controlled way (deterministic, post-hoc, not adversarial). On failure, the pipeline runs one repair iteration: the goal is rewritten to include the failure messages, and execute + verify rerun.
 
-[Source: `src/aegis/verify/verifier.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/verify/verifier.py)
+[Source: `src/aegis/verify/verifier.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/verify/verifier.py)
 
 ## Cache fast-path
 

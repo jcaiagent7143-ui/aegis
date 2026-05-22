@@ -43,4 +43,4 @@ Read the code. Fork it. Add a risk to the catalog from your own production obser
 
 - [The 5-stage pipeline](the-5-stage-pipeline.md) — implementation details.
 - [Risk catalog](../reference/index.md) — the named failure modes Aegis ships with.
-- [GitHub](https://github.com/loongnianchew/aegis) — source, issues, contributions.
+- [GitHub](https://github.com/jcaiagent7143-ui/aegis) — source, issues, contributions.

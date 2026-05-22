@@ -4,13 +4,13 @@ Full API reference lives in the source. The most-touched modules:
 
 | Module | Purpose |
 |---|---|
-| [`aegis.Aegis`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/core/aegis.py) | The facade — `await aegis.run(goal)` |
-| [`aegis.core.pipeline.Pipeline`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/core/pipeline.py) | The 5-stage orchestrator |
-| [`aegis.providers.base.Provider`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/providers/base.py) | Protocol every LLM adapter implements |
-| [`aegis.synthesize.sandbox`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/synthesize/sandbox.py) | AST validation + restricted exec |
-| [`aegis.assess.risk_catalog.CATALOG`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/assess/risk_catalog.py) | The named failure modes |
-| [`aegis.execute.tool_registry.tool`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/execute/tool_registry.py) | Decorator for new tools |
-| [`aegis.memory.harness_cache.HarnessCache`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/memory/harness_cache.py) | Embedding-keyed cache |
+| [`aegis.Aegis`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/core/aegis.py) | The facade — `await aegis.run(goal)` |
+| [`aegis.core.pipeline.Pipeline`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/core/pipeline.py) | The 5-stage orchestrator |
+| [`aegis.providers.base.Provider`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/providers/base.py) | Protocol every LLM adapter implements |
+| [`aegis.synthesize.sandbox`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/synthesize/sandbox.py) | AST validation + restricted exec |
+| [`aegis.assess.risk_catalog.CATALOG`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/assess/risk_catalog.py) | The named failure modes |
+| [`aegis.execute.tool_registry.tool`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/execute/tool_registry.py) | Decorator for new tools |
+| [`aegis.memory.harness_cache.HarnessCache`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/memory/harness_cache.py) | Embedding-keyed cache |
 
 ## The Risk Catalog (built-in)
 

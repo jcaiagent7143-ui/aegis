@@ -38,4 +38,4 @@ The synthesized harness is inspectable Python that you can read, edit, or copy i
 - [The 5-stage pipeline](concepts/the-5-stage-pipeline.md) — how each stage works.
 - [Why this matters for AGI](concepts/why-this-matters-for-agi.md) — the bigger picture.
 - [Quickstart](guides/quickstart.md) — install and run in 30 seconds.
-- [GitHub repo](https://github.com/loongnianchew/aegis) — fork, star, contribute.
+- [GitHub repo](https://github.com/jcaiagent7143-ui/aegis) — fork, star, contribute.

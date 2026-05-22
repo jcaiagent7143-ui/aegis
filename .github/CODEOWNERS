@@ -1,10 +1,10 @@
 # Default — every PR pings the maintainer
-*                                @loongnianchew
+*                                @jcaiagent7143-ui
 
 # Security-critical paths require explicit review
-/src/aegis/synthesize/sandbox.py @loongnianchew
-/src/aegis/assess/risk_catalog.py @loongnianchew
-/src/aegis/providers/             @loongnianchew
-/.github/workflows/               @loongnianchew
-/pyproject.toml                   @loongnianchew
-/SECURITY.md                      @loongnianchew
+/src/aegis/synthesize/sandbox.py @jcaiagent7143-ui
+/src/aegis/assess/risk_catalog.py @jcaiagent7143-ui
+/src/aegis/providers/             @jcaiagent7143-ui
+/.github/workflows/               @jcaiagent7143-ui
+/pyproject.toml                   @jcaiagent7143-ui
+/SECURITY.md                      @jcaiagent7143-ui

@@ -12,5 +12,5 @@ def run() -> None:
     except ImportError as e:
         raise ImportError("Textual TUI requires `pip install aegis-harness[tui]`") from e
     raise NotImplementedError(
-        "Textual TUI is on the v0.2 roadmap — see github.com/loongnianchew/aegis/issues"
+        "Textual TUI is on the v0.2 roadmap — see github.com/jcaiagent7143-ui/aegis/issues"
     )

@@ -6,16 +6,16 @@ the repo so each step is a copy-paste.
 ## 1 · Push to GitHub (5 minutes)
 
 ```bash
-cd /Users/loongnianchew/Desktop/claude/harness
+cd /Users/jcaiagent7143-ui/Desktop/claude/harness
 
 # If gh CLI isn't authenticated yet
 gh auth login --hostname github.com --git-protocol https --web
 
 # Create the public repo + push the v0.4.0 commit
-gh repo create loongnianchew/aegis \
+gh repo create jcaiagent7143-ui/aegis \
   --public \
   --description "Dynamic, on-the-fly generated harnesses for AI agents. The LLM designs its own runtime per task — no developer hand-authoring." \
-  --homepage "https://loongnianchew.github.io/aegis" \
+  --homepage "https://jcaiagent7143-ui.github.io/aegis" \
   --source=. \
   --remote=origin \
   --push
@@ -29,10 +29,10 @@ After push:
 
 ```bash
 # Add the topics so the repo appears in relevant GitHub feeds
-gh repo edit loongnianchew/aegis --add-topic ai,agent,llm,claude,openai,gemini,mcp,model-context-protocol,guardrails,sandbox,agi,self-harnessing,python
+gh repo edit jcaiagent7143-ui/aegis --add-topic ai,agent,llm,claude,openai,gemini,mcp,model-context-protocol,guardrails,sandbox,agi,self-harnessing,python
 ```
 
-Visit https://github.com/loongnianchew/aegis to confirm it's live.
+Visit https://github.com/jcaiagent7143-ui/aegis to confirm it's live.
 
 ## 2 · Set up PyPI publishing (10 minutes, one-time)
 
@@ -43,12 +43,12 @@ secrets needed). One-time setup:
 2. Visit https://pypi.org/manage/account/publishing/ → "Add a new pending publisher"
 3. Fill in:
    * **PyPI Project Name:** `aegis-harness`
-   * **Owner:**             `loongnianchew`
+   * **Owner:**             `jcaiagent7143-ui`
    * **Repository name:**   `aegis`
    * **Workflow name:**     `release.yml`
    * **Environment name:**  `pypi`
 4. In your GitHub repo: Settings → Environments → New environment → name it `pypi`.
-   Add an environment protection rule "Required reviewers: loongnianchew" so
+   Add an environment protection rule "Required reviewers: jcaiagent7143-ui" so
    nobody else can trigger a publish.
 
 Now any `git push origin vX.Y.Z` tag triggers a PyPI publish automatically.
@@ -60,7 +60,7 @@ Now any `git push origin vX.Y.Z` tag triggers a PyPI publish automatically.
    that touches `docs/` or `mkdocs.yml`.
 
 After the first run, your docs site goes live at
-**https://loongnianchew.github.io/aegis**.
+**https://jcaiagent7143-ui.github.io/aegis**.
 
 ## 4 · Rotate the OpenAI API key (CRITICAL — 1 minute)
 
@@ -75,7 +75,7 @@ it as compromised:
 ## 5 · Validate the live path against the real LLM (5 minutes)
 
 ```bash
-cd /Users/loongnianchew/Desktop/claude/harness
+cd /Users/jcaiagent7143-ui/Desktop/claude/harness
 source .venv/bin/activate
 chflags -R nohidden .venv     # macOS quirk
 
@@ -103,7 +103,7 @@ Body (first comment):
 > gains a per-task self-generated runtime (system prompt, schema, verifier,
 > retry policy — all written by the LLM, validated by a sandbox, executed
 > by a thin interpreter). MIT licensed, 75 unit tests, real-LLM tested
-> against gpt-5.4-nano. Repo: https://github.com/loongnianchew/aegis.
+> against gpt-5.4-nano. Repo: https://github.com/jcaiagent7143-ui/aegis.
 > Feedback welcome.
 
 ### Twitter/X
@@ -116,7 +116,7 @@ Body (first comment):
 > Released today as @aegisharness, MIT licensed, plugs into Claude Code,
 > Cursor, Codex, anything OpenAI-compatible.
 >
-> https://github.com/loongnianchew/aegis
+> https://github.com/jcaiagent7143-ui/aegis
 
 ### Reddit (/r/LocalLLaMA, /r/MachineLearning, /r/Python)
 

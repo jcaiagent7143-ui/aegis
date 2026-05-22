@@ -313,7 +313,7 @@ We measure task success, hallucination rate, tokens used, latency, and retry cou
 - [Guides → Self-hosting with Ollama](docs/guides/self-hosting-with-ollama.md)
 - [API reference](docs/reference/index.md)
 
-Full site: **[loongnianchew.github.io/aegis](https://loongnianchew.github.io/aegis)** (run `mkdocs serve` locally).
+Full site: **[jcaiagent7143-ui.github.io/aegis](https://jcaiagent7143-ui.github.io/aegis)** (run `mkdocs serve` locally).
 
 ---
 
@@ -367,7 +367,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Look for `good first issue` labels.
   title   = {Aegis: Dynamic, On-The-Fly Generated Harnesses for AI Agents},
   author  = {The Aegis Contributors},
   year    = {2026},
-  url     = {https://github.com/loongnianchew/aegis},
+  url     = {https://github.com/jcaiagent7143-ui/aegis},
   version = {0.1.0},
 }
 ```

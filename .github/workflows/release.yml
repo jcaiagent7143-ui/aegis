@@ -5,7 +5,7 @@ name: release
 # Uses PyPI Trusted Publishing (OIDC) so no API token is stored in GitHub secrets.
 # One-time setup at https://pypi.org/manage/account/publishing/:
 #   * PyPI project name: aegis-harness
-#   * Owner:              loongnianchew
+#   * Owner:              jcaiagent7143-ui
 #   * Repository name:    aegis
 #   * Workflow name:      release.yml
 #   * Environment name:   pypi

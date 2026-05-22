@@ -1,8 +1,8 @@
 site_name: Aegis
 site_description: Dynamic, on-the-fly generated harnesses for AI agents
-site_url: https://loongnianchew.github.io/aegis
-repo_url: https://github.com/loongnianchew/aegis
-repo_name: loongnianchew/aegis
+site_url: https://jcaiagent7143-ui.github.io/aegis
+repo_url: https://github.com/jcaiagent7143-ui/aegis
+repo_name: jcaiagent7143-ui/aegis
 
 theme:
   name: material

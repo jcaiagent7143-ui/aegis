@@ -4,7 +4,7 @@ Aegis ships with a risk catalog of ~30 named failure modes. Each entry tells the
 
 ## Option 1 — Add an entry to the risk catalog
 
-The cleanest path. Open [`src/aegis/assess/risk_catalog.py`](https://github.com/loongnianchew/aegis/blob/main/src/aegis/assess/risk_catalog.py) and add a `CatalogEntry`:
+The cleanest path. Open [`src/aegis/assess/risk_catalog.py`](https://github.com/jcaiagent7143-ui/aegis/blob/main/src/aegis/assess/risk_catalog.py) and add a `CatalogEntry`:
 
 ```python
 CatalogEntry(
