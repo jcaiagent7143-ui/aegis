@@ -4,6 +4,56 @@ All notable changes to Aegis are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] — 2026-05-23
+
+The "your own LLM does the work" release. Aegis becomes primarily a **skill**
+your LLM applies itself in-conversation, not a subprocess that spins up
+another LLM. This is the architectural pivot users have been asking for
+since v0.1: when you're using Claude, *Claude* should do the 5-stage
+methodology — not Claude calling out to some other model that runs in the
+background while Claude waits for a response.
+
+### Added — primary "skill" form (no second LLM, no API key, no subprocess)
+- **SKILL.md is completely rewritten** as a self-applied methodology rather
+  than a delegation skill. The whole methodology — the 5-stage procedure,
+  the full 30-entry risk catalog, the harness template, the worked example,
+  the verification checklist — is now inline in the markdown so Claude can
+  apply it without calling out anywhere.
+- When a Claude user imports this repo as a skill (Claude Code / Chat /
+  Cowork), Claude reads SKILL.md once, then for each risky task does all 5
+  stages itself in the same conversation using its own model and its own
+  tools (Bash, Edit, Read, WebFetch, etc.). The user sees every stage
+  inline. No API key for Aegis itself is needed; no second model is called;
+  there is no subprocess.
+- Trade-off documented honestly: Claude reasons ~3-5× longer per task to
+  produce the audit trail and refusal. Same LLM means same blind spots, so
+  the verifier catches structural issues (schema, citation existence,
+  arithmetic recomputation, …) — not subtle reasoning errors only a
+  different model would catch.
+
+### Changed
+- **README restructured** around the "two forms, when to use which" table.
+  The skill form is the recommended path for Claude users; the Python
+  runtime + MCP server + HTTP proxy remain the secondary path for non-skill-
+  aware tools (Codex CLI, Aider, Open WebUI, generic OpenAI clients) where
+  the host LLM can't follow the methodology on its own.
+- The Python runtime, MCP server, and HTTP proxy are unchanged from v0.4.2
+  — they're still the right answer for tools that can't load a skill.
+
+### Notes on the architectural choice
+- For Claude users: one model, one bill, one audit trail. No "Claude calls
+  GPT in the background" weirdness.
+- For non-Claude users (Codex, Aider, etc.): the runtime delegates because
+  Codex doesn't have a way to read + apply a skill at conversation time.
+  Documented clearly in the "Which form do I use?" table.
+
+### Tests
+- 78/78 unit tests still passing (no code changes; pure docs/skill rewrite).
+- The skill itself can be eyeball-tested by importing the repo into Claude
+  Code and asking it to apply Aegis to a real task.
+
+---
+
 ## [0.4.2] — 2026-05-23
 
 Triggered by an external review that mis-identified `pypi.org/project/aegis-harness/`

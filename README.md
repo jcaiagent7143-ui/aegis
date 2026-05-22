@@ -8,7 +8,7 @@
 
 <img src="docs/assets/aegis-hero.svg" alt="Aegis pipeline diagram" width="100%"/>
 
-[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.4.2-blue)](https://pypi.org/project/self-harness/)
+[![PyPI](https://img.shields.io/badge/pypi-self--harness%200.5.0-blue)](https://pypi.org/project/self-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](.github/workflows/test.yml)
@@ -35,6 +35,24 @@
 
 ---
 
+## Which form do I use?
+
+| You are using… | Use this form | Second LLM spun up? | API key needed for Aegis itself? |
+|---|---|---|---|
+| Claude Code | **Skill** (import the GitHub repo as a skill) | No | No — uses your Claude session |
+| Claude Chat / Cowork | **Skill** (paste SKILL.md as a skill) | No | No |
+| Cursor with skill loading | **Skill** | No | No |
+| Cursor without skills | MCP server *or* OpenAI proxy | Yes | Yes |
+| OpenAI Codex CLI | **OpenAI proxy** (`aegis proxy`) | Yes | Yes (OPENAI_API_KEY) |
+| Gemini CLI | **OpenAI proxy** *or* MCP if your build supports it | Yes | Yes |
+| Cline / Continue.dev / Windsurf | MCP server | Yes | Yes |
+| Aider / Open WebUI / generic OpenAI clients | OpenAI proxy | Yes | Yes |
+| Your own Python service | `pip install self-harness` and import `Aegis` | Yes | Yes |
+
+**Recommended path for any Claude user is the Skill form** — same model, same bill, no subprocess, audit trail visible to you inline. The runtime exists for tools that can't load skills.
+
+---
+
 ## The thesis
 
 Today, every agent framework — **OpenClaw, Hermes**, LangChain, CrewAI, AutoGen, the OpenAI Assistants API — makes the developer hand-author the harness. You write the system prompt. You write the tool allowlist. You write the output schema. You write the validators. You write the retry policy. You write the sandbox rules. You write it once, and it applies to every task forever after.
@@ -51,48 +69,64 @@ The next stepping stone toward AGI is agents that:
 
 The developer authors *nothing per-task*. They just state the goal. The LLM designs the harness.
 
-That's Aegis. **A self-harnessing agent framework**, available right now, that plugs into any AI coding tool you already use — Claude Code, Cursor, OpenAI Codex, Cline, Continue, Windsurf, Aider, anything OpenAI-compatible — with one CLI command and zero Python code.
+That's Aegis. It ships in two forms:
+
+1. **A skill your LLM applies itself** — the primary form. A single markdown file ([SKILL.md](SKILL.md)) that teaches your AI assistant (Claude Code / Chat / Cowork, Cursor, anyone with skill-loading) the 5-stage methodology. The LLM does all 5 stages itself in the same conversation, using its own model and its own tools. **No subprocess. No second LLM. No API key.** One model, one bill, one audit trail visible inline to the user.
+2. **A Python runtime + MCP server + OpenAI proxy** — the secondary form. For non-skill-aware tools (Codex CLI, Aider, Open WebUI, generic OpenAI clients) that can't read a skill, the runtime brings its own LLM and delegates. Same methodology, different mechanism.
 
 The same goal produces a *different harness* on every run, because the LLM is doing the design work — not a developer staring at a config file.
 
 ---
 
-## Use with your AI coding tool — 30 seconds, no code
+## Primary form — your LLM applies it itself (no second LLM, no API key)
 
-Aegis ships as a **Model Context Protocol server** and as an **OpenAI-compatible HTTP proxy**. Either way, your existing AI coding assistant gains Aegis's safety pipeline without you writing a line of Python.
+This is the right path if you use Claude Code, Claude Chat, Claude Cowork, or any tool that supports loading Anthropic-style Skills. The skill is just a markdown file Claude reads and applies.
 
-### MCP — for Claude Code, Cursor, Cline, Continue, Windsurf
+**Install as a skill into Claude Code:**
 
-Add this to your tool's MCP config (e.g. `~/.claude/mcp.json` for Claude Code):
+In Claude Code's Skills panel → **Import from GitHub** → paste:
+```
+https://github.com/jcaiagent7143-ui/aegis
+```
+
+Now ask Claude *"Apply the aegis skill to verify: should I refactor src/auth.py to async?"* — Claude reads the skill, runs all 5 stages itself in the same conversation (analyzes the goal, picks risks from the catalog inline in the skill, writes the Pydantic verifier as a code block, executes using its own Bash/Edit/Read tools, runs the verifier with real tool calls, reports pass or refuses).
+
+**There is no `aegis_run` tool call to a subprocess. There is no second LLM call. Claude does it all itself using your one model and your one API key.** What you pay for is Claude reasoning longer (~3-5× more tokens per task) — that's the trade for the audit trail and refusal.
+
+Full skill: [SKILL.md](SKILL.md). Read it once to see exactly what Claude follows.
+
+---
+
+## Secondary form — for non-skill-aware tools (delegation path)
+
+If you're using **OpenAI Codex CLI**, **Cursor without skills**, **Aider**, **Open WebUI**, or anything that doesn't natively load skills, the Python runtime does the 5 stages for them. This path *does* spin up a second LLM (because the outer tool can't follow the methodology on its own).
+
+### Option A — MCP server (Cursor, Cline, Continue.dev, Windsurf, Claude Code if you prefer delegation)
 
 ```json
 {
   "mcpServers": {
     "aegis": {
-      "command": "uvx",
-      "args": ["self-harness", "mcp"],
+      "command": "aegis",
+      "args": ["mcp"],
       "env": {"OPENAI_API_KEY": "sk-..."}
     }
   }
 }
 ```
 
-Restart your tool. It now sees four new tools — `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks` — and can call them whenever it's about to do something risky. Done.
+Tools exposed: `aegis_run`, `aegis_assess`, `aegis_inspect`, `aegis_list_risks`.
 
-### Proxy — for Cursor, Continue, Aider, Open WebUI, anything OpenAI-compatible
+### Option B — OpenAI-compatible HTTP proxy (Codex CLI, Aider, Open WebUI, generic /v1 clients)
 
 ```bash
-# Until PyPI publish:
 pip install "self-harness[proxy,openai] @ git+https://github.com/jcaiagent7143-ui/aegis.git"
-# After PyPI publish:
-#   pip install 'self-harness[proxy,openai]'
 export OPENAI_API_KEY=sk-...
 aegis proxy --port 8000
+# then in your tool: set base URL to http://localhost:8000/v1
 ```
 
-In your tool's settings, change one URL: **`http://localhost:8000/v1`**. Every request now flows through the Aegis pipeline — schema validation, sandboxed verifier, repair loop. Same API, safer outputs.
-
-Copy-paste configs for every supported tool: [docs/guides/use-with-your-ai-coding-tool.md](docs/guides/use-with-your-ai-coding-tool.md).
+Copy-paste configs for every tool: [docs/guides/use-with-your-ai-coding-tool.md](docs/guides/use-with-your-ai-coding-tool.md).
 
 ---
 
