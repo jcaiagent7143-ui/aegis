@@ -41,8 +41,8 @@ openai = ["openai>=1.40"]
 gemini = ["google-genai>=0.3"]
 ollama = ["ollama>=0.3"]
 litellm = ["litellm>=1.40"]
-web = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
-proxy = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
+web = ["fastapi>=0.110", "uvicorn[standard]>=0.47.0"]
+proxy = ["fastapi>=0.110", "uvicorn[standard]>=0.47.0"]
 mcp = ["mcp>=1.0"]
 tui = ["textual>=0.60"]
 embeddings = ["numpy>=1.26"]
@@ -53,7 +53,7 @@ all = [
   "ollama>=0.3",
   "litellm>=1.40",
   "fastapi>=0.110",
-  "uvicorn[standard]>=0.29",
+  "uvicorn[standard]>=0.47.0",
   "mcp>=1.0",
   "textual>=0.60",
   "numpy>=1.26",
